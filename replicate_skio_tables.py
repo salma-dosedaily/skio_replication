@@ -39,14 +39,18 @@ TABLES_TO_SKIP = ["CancelFlowV2Session"]
 # 🛠️ HELPER FUNCTIONS
 # ==========================================
 
-def get_secret(secret_name, project_id, version_id="latest"):
+def get_secret(secret_name, project_id, version_id="latest", logger=None):
+    """Fetch secret from Secret Manager. Returns None on failure."""
+    log = logger or logging.getLogger(__name__)
     try:
         client = secretmanager.SecretManagerServiceClient()
         name = f"projects/{project_id}/secrets/{secret_name}/versions/{version_id}"
         response = client.access_secret_version(request={"name": name})
-        return response.payload.data.decode("UTF-8")
+        value = response.payload.data.decode("UTF-8")
+        log.info("Secret '%s' fetched successfully (length=%d)", secret_name, len(value))
+        return value
     except Exception as e:
-        print(f"⚠️ Warning: Could not fetch secret '{secret_name}': {e}")
+        log.warning("Could not fetch secret '%s' from project %s: %s", secret_name, project_id, e)
         return None
 
 def to_snake_case(name):
@@ -254,10 +258,15 @@ def replicate_skio_data(request):
     error_count = len([r for r in sync_results if r['status'] == 'ERROR'])
     
     if not dry_run:
-        webhook = get_secret(SECRET_NAME, DEST_PROJECT)
+        logger.info("Fetching Slack webhook from Secret Manager: project=%s, secret=%s", DEST_PROJECT, SECRET_NAME)
+        webhook = get_secret(SECRET_NAME, DEST_PROJECT, logger=logger)
+        if not webhook:
+            logger.warning("Slack webhook is missing: secret '%s' not found or not accessible. No Slack report will be sent.", SECRET_NAME)
         dq_report = quality_checker.get_results()
-        slack_reporter = SlackReporter(webhook)
+        slack_reporter = SlackReporter(webhook, logger=logger)
         slack_reporter.send_report(sync_results, dq_report)
+    else:
+        logger.info("Dry run: skipping Slack report.")
 
     return f"Done. Success: {success_count}, Errors: {error_count}", 200
 

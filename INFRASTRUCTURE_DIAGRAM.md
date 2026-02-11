@@ -115,3 +115,172 @@ sequenceDiagram
     SR->>Slack: POST blocks (sync errors + DQ table)
     CF-->>CS: Return "Done. Success: N, Errors: M"
 ```
+---
+
+## Database model
+
+[Live view of the model on mermaid live](https://mermaid.live/edit#pako:eNrFWFtv4jgU_itWpJmn0gVK2y1vLLRSta22gumMtOLFTQ7Bi2NnbaedTNv_vsfOhQAGMt2VloeqOZz7-c4lvAahjCAYBp1OZy5CKRYsHs4FIZzmMjNDAnw1F-5LUBNGY0UT-zUhnz6RsVRAroVhhoEuqDODtIWSwjxqUOTtrdORr2SWPelQsdQwKciQzIMl1fPgkMQfKsIHy5pyGsIR7lEUKdDa8csXseZmBvb7ILXxck4o4_kojhXE1MAX-sTBCdCKVEvVmdhQPgGDGqqENL_xuHLHRKEdc49iDd-bgu-y03l7Iw80T0CYezBLGTmpTINfojT1G-OciXhkDCSpqXJPlkxjInO_rbfCluQszJ3EU6GEpI7UUigCzp5B5QelirCa5dNLlmpi5E6KC0TcsQWEecihoBfEJmZsPm8x2OM53UFaDIhxW16iIMyUwpArwa00ln6vRdH9jBtNmNjx-0HJKAsNuadpajXuOOIQUOWvYP5KFaPClKoXoEA0emAzzlLSiympWMyECwl7JqkUbFnZtF1UHLgUsbcOI0F5blioyWcyBYNwRIv701uzTzIhMP5vTETyxRlJpGCIwoPVGVOMnN9w-fK1P0OMVM0bLjMlCDyjeU2e-y1VnO1XcXZIxSiLmLmTsZPjMj42jqqYS11PoG6kGsulVEV6jaLhCqISLl5VrwXVfrSxUCQsIg-_71AhwVmzQ8WhaRZSJbcRWpstZcoWObmdVG6_z30Va2tSG2oyvSZHCDDDEiACvpuyUyZIW3MsuKSGuITPQrs05sGE6VC6-XCDiGi0mv38pdEdxz5lejUFis_6mBBDKKOHQFdjmeH_R9jrYJppx3zd7AacNseun6UckcX887NUA_EQj51-dkqUE7HBVJesGDqta9Uo8JbJoihGGsofFAvBU9AQs2kgGpn2afNCyw2koy4XDqXWl28MU50ZV8AWtbSllzYvemr7QdRztl0mqjJvjMUtHmvi74zaYyffinRrOfwHpSk5XEh7gOJ60Db343h8PZv9cjO6vXucXnsQDkrZ4RMd7bq67E8bAa3rX0e8eYe0DdjkKewQOdVmsKW-ugfaKg7rmjSJFjhql_6DpR9Ac3nYtPUI0QLqmfJN_FRUN5-2DZTbt3UymamOoG0d1V7_gKpmTlaZtzV946g-RtqaPIDsn-xCr3d7usy56Sluvd5bL117NHzxwdl9g8uPfqDdj6PQdw219Vm5LXp0mR_21ufJ2f_ryZ4D819O4V31vlvu9UPnROiE1xdSbcv34ukxga-qW4rt5HZ_vNt9akGZVcaCkyBWLAqGRmVwEiSgcGPiY-As4W26hATmgXuFo2plF4SVSan4U8qkElMyi5fBcEG5xqcstcbLnwdqFhDY5G7WBcMrpyEYvgbfg-FgcHXavRpcdK9-vez1u93zkyAPhuf900G3e9kf9Hv93sX7SfDD2eud9s57lxe9_tXZoNfrnw9QFUT2xeG--OXC_YDx_g8ym2cv)
+
+```mermaid
+---
+config:
+  layout: elk
+---
+erDiagram
+    %% Core Entities
+    StorefrontUser ||--o{ Subscription : "has"
+    StorefrontUser ||--o{ Order : "places"
+    StorefrontUser ||--o{ Address : "owns"
+    Site ||--o{ Subscription : "hosts"
+    Site ||--o{ DailyAggregateTable : "aggregates"
+    
+    %% Subscription Details
+    Subscription ||--o{ SubscriptionLine : "contains"
+    Subscription }o--|| PaymentMethod : "uses"
+    Subscription ||--o{ BillingAttempt : "has history"
+    Subscription }|--|| Policy : "billing policy"
+    Subscription }|--|| Policy : "delivery policy"
+    Subscription }o--|| Address : "ships to"
+    
+    %% Order Lifecycle
+    Order ||--o{ OrderLineItem : "contains"
+    Subscription ||--o{ Order : "generates recurring"
+    BillingAttempt }o--|| Order : "results in"
+    
+    %% Product Mapping
+    SubscriptionLine }|--|| ProductVariant : "references"
+    OrderLineItem }|--|| SubscriptionLine : "originates from"
+    ProductVariant }|--|| Product : "belongs to"
+    
+    %% Analytics & Retention
+    Subscription ||--o{ AnalyticsDunningWindow : "monitors"
+    Subscription ||--o{ CancelFlowV2Session : "churn events v2"
+    Subscription ||--o{ CancelFlowV3Session : "churn events v3"
+    Subscription ||--o{ AuditLog : "logs"
+    StorefrontUser ||--o{ AnalyticsSubscriberForCohort : "tracked in"
+
+    StorefrontUser {
+        string id PK
+        string email
+        string platformId "Shopify ID"
+    }
+
+    Subscription {
+        string id PK
+        string status
+        datetime nextBillingDate
+        float churnScore "Discovery Finding"
+        json churnRiskReasons "Discovery Finding"
+        int streakCount "Discovery Finding"
+        string storefrontUserId FK
+        string paymentMethodId FK
+        string billingPolicyId FK
+        string deliveryPolicyId FK
+        string shippingAddressId FK
+    }
+
+    Order {
+        string id PK
+        string subscriptionId FK
+        float totalPrice
+        datetime createdAt
+        string storefrontUserId FK
+    }
+
+    SubscriptionLine {
+        string id PK
+        float priceWithoutDiscount "Discovery Finding"
+        int ordersRemaining
+        string subscriptionId FK
+        string productVariantId FK
+        int quantity
+    }
+
+    BillingAttempt {
+        string id PK
+        string subscriptionId FK
+        string orderId FK
+        string status "SUCCESS/FAILURE"
+        string errorCode "Discovery Finding"
+        datetime billingAttemptedAt
+    }
+
+    PaymentMethod {
+        string id PK
+        string type
+        string last4
+    }
+
+    Address {
+        string id PK
+        string city
+        string country
+        string zip
+        string storefrontUserId FK
+    }
+
+    Policy {
+        string id PK
+        string interval
+        int intervalCount
+    }
+
+    Product {
+        string id PK
+        string title
+    }
+
+    ProductVariant {
+        string id PK
+        string title
+        string sku
+        float price
+    }
+
+    OrderLineItem {
+        string id PK
+        string orderId FK
+        string productVariantId FK
+        int quantity
+        float price
+        string subscriptionLineId FK
+    }
+
+    AuditLog {
+        string id PK
+        string eventType
+        string eventData
+        string subscriptionId FK
+        string storefrontUserId FK
+    }
+
+    CancelFlowV2Session {
+        string id PK
+        string reason
+        string status
+        string subscriptionId FK
+    }
+
+    CancelFlowV3Session {
+        string id PK
+        string reason
+        string status
+        string subscriptionId FK
+    }
+
+    AnalyticsDunningWindow {
+        string id PK
+        string subscriptionId FK
+    }
+
+    AnalyticsSubscriberForCohort {
+        string storefrontUserId FK
+        string cohortDate
+    }
+
+    DailyAggregateTable {
+        string siteId FK
+        date date
+        float totalRevenue
+    }
+```

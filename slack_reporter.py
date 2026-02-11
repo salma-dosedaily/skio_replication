@@ -1,17 +1,19 @@
 import requests
 import json
+import logging
 from tabulate import tabulate
 
 class SlackReporter:
-    def __init__(self, webhook_url):
+    def __init__(self, webhook_url, logger=None):
         self.webhook_url = webhook_url
+        self.logger = logger or logging.getLogger(__name__)
 
     def send_report(self, sync_results, dq_results):
         """
         Formats and sends a combined Sync + Data Quality report to Slack.
         """
         if not self.webhook_url:
-            print("⚠️ No Slack Webhook URL provided. Skipping report.")
+            self.logger.warning("No Slack Webhook URL provided. Skipping report.")
             return
 
         # 1. Filter Sync Errors
@@ -56,15 +58,16 @@ class SlackReporter:
 
         # 4. Send to Slack
         try:
+            self.logger.info("Sending Slack report (blocks=%d)", len(blocks))
             response = requests.post(
-                self.webhook_url, 
+                self.webhook_url,
                 data=json.dumps({"blocks": blocks}),
-                headers={'Content-Type': 'application/json'},
-                timeout=10
+                headers={"Content-Type": "application/json"},
+                timeout=10,
             )
             if response.status_code != 200:
-                print(f"❌ Failed to send Slack alert: {response.text}")
+                self.logger.error("Slack webhook returned %s: %s", response.status_code, response.text)
             else:
-                print("✅ Slack report sent successfully.")
+                self.logger.info("Slack report sent successfully.")
         except Exception as e:
-            print(f"❌ Error sending Slack alert: {e}")
+            self.logger.exception("Error sending Slack alert: %s", e)
