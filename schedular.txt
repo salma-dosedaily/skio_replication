@@ -1,0 +1,6 @@
+30 2,6,10,14,18,22 * * *
+Since the source refreshes every 4 hours starting at 02:00 UTC, you should schedule your function to run 30 minutes later. This buffer ensures the source data has finished writing before you try to copy it.
+
+Source Schedule (UTC): 02:00, 06:00, 10:00, 14:00, 18:00, 22:00
+
+Your Schedule (UTC): 02:30, 06:30, 10:30, 14:30, 18:30, 22:30

@@ -1,0 +1,4114 @@
+version: 2
+sources:
+- name: largedata-380204.skio_dosedaily_co
+  tables:
+  - name: Address
+    description: Stores all physical and mailing address information for various entities
+      within the business.
+    columns:
+    - name: id
+      description: A unique identifier for each distinct address record. Primary key.
+      data_type: VARCHAR
+      primary_key: true
+    - name: createdAt
+      description: The timestamp indicating when this address record was first created
+        in the system.
+      data_type: DATETIME
+    - name: updatedAt
+      description: Stores the timestamp indicating the last time the address record
+        was modified.
+      data_type: DATETIME
+    - name: address1
+      description: The primary street address line for the address.
+      data_type: VARCHAR
+    - name: address2
+      description: Stores the second line of an address for details such as apartment,
+        suite, or unit numbers.
+      data_type: VARCHAR
+    - name: city
+      description: The name of the city where the address is located.
+      data_type: VARCHAR
+    - name: company
+      description: The company or organization name associated with this address.
+      data_type: VARCHAR
+    - name: country
+      description: The sovereign nation or territory where the address is physically
+        located.
+      data_type: VARCHAR
+    - name: firstName
+      description: The given name of the individual associated with this address record.
+      data_type: VARCHAR
+    - name: phoneNumber
+      description: The primary contact phone number associated with this address.
+      data_type: VARCHAR
+    - name: province
+      description: The high-level administrative division of a country, such as a
+        state or region, where the address is situated.
+      data_type: VARCHAR
+    - name: zip
+      description: The zip column stores the postal code associated with a given address.
+      data_type: VARCHAR
+    - name: lastName
+      description: The last name of the individual associated with this address record.
+      data_type: VARCHAR
+    - name: storefrontUserId
+      description: The unique identifier of the user who owns this address. Joins
+        to StorefrontUser.id.
+      data_type: VARCHAR
+      foreign_key: StorefrontUser.id
+    - name: platformId
+      description: Identifies the unique platform or system associated with this address
+        record (e.g., Shopify customer ID).
+      data_type: VARCHAR
+    - name: doorCode
+      description: The code used for entry to the property.
+      data_type: VARCHAR
+    - name: siteId
+      description: Unique identifier for the site associated with this address. Joins
+        to Site.id.
+      data_type: VARCHAR
+      foreign_key: Site.id
+  - name: AnalyticsStateChangeTable
+    description: Records all state changes occurring across analytics data, configurations,
+      and processing pipelines.
+    columns:
+    - name: id
+      description: Uniquely identifies each record representing a change in the analytics
+        state. Primary key.
+      data_type: VARCHAR
+      primary_key: true
+    - name: startedAt
+      description: The timestamp when an analytics state change began.
+      data_type: DATETIME
+    - name: localStartedAt
+      description: The local timestamp recorded on the client device at the beginning
+        of an analytics state change event.
+      data_type: DATETIME
+    - name: endedAt
+      description: The timestamp marking the conclusion of the analytics state change
+        event.
+      data_type: DATETIME
+    - name: localEndedAt
+      description: The local timestamp indicating when the associated analytics state
+        change event or session ended.
+      data_type: DATETIME
+    - name: oldStatus
+      description: The status an analytics record held immediately before a state
+        change was initiated.
+      data_type: VARCHAR
+    - name: oldStatusContext
+      description: Provides the specific contextual details or additional information
+        about the analytics entity's status immediately preceding a recorded state
+        change.
+      data_type: VARCHAR
+    - name: newStatus
+      description: The status an analytics entity transitions to.
+      data_type: VARCHAR
+    - name: subscriptionId
+      description: The unique identifier for the subscription associated with this
+        state change. Joins to Subscription.id.
+      data_type: VARCHAR
+      foreign_key: Subscription.id
+    - name: newStatusContext
+      description: Describes the contextual information pertaining to the new analytical
+        state.
+      data_type: VARCHAR
+    - name: siteId
+      description: A unique identifier for the site whose analytics state change is
+        recorded. Joins to Site.id.
+      data_type: VARCHAR
+      foreign_key: Site.id
+  - name: AnalyticsSubscriberStateChangeTable
+    description: Records every change in a subscriber's state for analytical purposes.
+    columns:
+    - name: startedAt
+      description: The time the subscriber entered the recorded state.
+      data_type: DATETIME
+    - name: localStartedAt
+      description: The timestamp, recorded on the local device, when the subscriber
+        state change event was initiated.
+      data_type: DATETIME
+    - name: endedAt
+      description: The timestamp indicating when a subscriber's specific state ended.
+      data_type: DATETIME
+    - name: localEndedAt
+      description: The timestamp, in the local timezone, when the subscriber's state
+        period ended.
+      data_type: DATETIME
+    - name: oldStatus
+      description: The subscriber's status immediately preceding the recorded change.
+      data_type: VARCHAR
+    - name: newStatus
+      description: The subscriber's final status recorded after a change in their
+        subscription state.
+      data_type: VARCHAR
+    - name: storefrontUserId
+      description: Unique identifier for the storefront user whose state changes are
+        recorded. Joins to StorefrontUser.id.
+      data_type: VARCHAR
+      foreign_key: StorefrontUser.id
+    - name: siteId
+      description: A unique identifier for the site where the subscriber state change
+        was recorded. Joins to Site.id.
+      data_type: VARCHAR
+      foreign_key: Site.id
+  - name: AuditLog
+    partition_by: createdAt
+    cluster_by:
+      - eventType
+      - subscriptionId
+    description: Records all user actions and system changes for auditing, compliance,
+      and historical review.
+    columns:
+    - name: id
+      description: A unique identifier for each entry in the audit log. Primary key.
+      data_type: VARCHAR
+      primary_key: true
+    - name: eventType
+      description: Identifies the category or type of action recorded in the audit
+        log.
+      data_type: VARCHAR
+    - name: eventData
+      description: The specific data and details related to the recorded audit event.
+      data_type: VARCHAR
+    - name: subscriptionId
+      description: The unique identifier for the subscription associated with the
+        audit log entry. Joins to Subscription.id.
+      data_type: VARCHAR
+      foreign_key: Subscription.id
+    - name: createdAt
+      description: The date and time this audit log entry was created.
+      data_type: DATETIME
+    - name: updatedAt
+      description: Timestamp of the last modification to this audit log record.
+      data_type: DATETIME
+    - name: storefrontUserId
+      description: Identifies the user who performed the audited action. Joins to
+        StorefrontUser.id.
+      data_type: VARCHAR
+      foreign_key: StorefrontUser.id
+    - name: domain
+      description: Identifies the logical domain or subsystem affected by the audited
+        event.
+      data_type: VARCHAR
+    - name: eventDataParsed
+      description: The structured, machine-readable data representing the audit event,
+        derived from its original raw form.
+      data_type: JSON
+    - name: siteId
+      description: A unique identifier representing the site where the logged action
+        originated. Joins to Site.id.
+      data_type: VARCHAR
+      foreign_key: Site.id
+    - name: localCreatedAt
+      description: The timestamp indicating when this audit log entry was created
+        on the local system.
+      data_type: DATETIME
+  - name: BillingAttempt
+    partition_by: createdAt
+    cluster_by:
+      - errorCode
+      - subscriptionId
+    description: Stores data for each instance of an attempt to bill a customer or
+      account.
+    columns:
+    - name: id
+      description: A unique identifier for each individual billing attempt. Primary
+        key.
+      data_type: VARCHAR
+      primary_key: true
+    - name: createdAt
+      description: The date and time the billing attempt record was created.
+      data_type: DATETIME
+    - name: updatedAt
+      description: The date and time this specific billing attempt record was last
+        modified in the system.
+      data_type: DATETIME
+    - name: platformId
+      description: Unique identifier for the platform associated with the billing
+        attempt (e.g., Shopify billing attempt ID).
+      data_type: VARCHAR
+    - name: orderId
+      description: The unique identifier of the order this billing attempt is associated
+        with. Joins to Order.id.
+      data_type: VARCHAR
+      foreign_key: Order.id
+    - name: subscriptionId
+      description: Uniquely identifies the subscription associated with this billing
+        attempt. Joins to Subscription.id.
+      data_type: VARCHAR
+      foreign_key: Subscription.id
+    - name: errorCode
+      description: The specific code indicating why the billing attempt failed.
+      data_type: VARCHAR
+    - name: errorMessage
+      description: Contains the specific error message generated when a billing attempt
+        fails.
+      data_type: VARCHAR
+    - name: billingAttemptedAt
+      description: The date and time when the system initiated an attempt to bill
+        a customer.
+      data_type: DATETIME
+    - name: orderPlatformId
+      description: Identifies the platform order ID on which the order prompting this
+        billing attempt was placed.
+      data_type: VARCHAR
+    - name: subscriptionBillingDate
+      description: The scheduled or actual date for processing a subscription's recurring
+        payment.
+      data_type: DATETIME
+    - name: stateContext
+      description: Provides specific details or contextual information about the current
+        state of the billing attempt.
+      data_type: VARCHAR
+    - name: idempotencyKey
+      description: Uniquely identifies a billing attempt request to ensure it is processed
+        only once, preventing duplicate charges.
+      data_type: VARCHAR
+    - name: source
+      description: Identifies the system or process that initiated this specific billing
+        attempt.
+      data_type: VARCHAR
+    - name: nextActionUrl
+      description: The URL where the user or system should be directed to take the
+        next required action for this billing attempt.
+      data_type: VARCHAR
+  - name: CancelFlowV2Session
+    description: Stores data related to individual sessions within the version 2 cancellation
+      workflow.
+    columns:
+    - name: id
+      description: A unique identifier for each session of the CancelFlowV2 process.
+        Primary key.
+      data_type: VARCHAR
+      primary_key: true
+    - name: createdAt
+      description: The timestamp indicating when this CancelFlowV2Session record was
+        created.
+      data_type: DATETIME
+    - name: updatedAt
+      description: Records the exact time this CancelFlowV2Session was most recently
+        modified.
+      data_type: DATETIME
+    - name: cancelFlowId
+      description: A unique identifier for a specific instance of a cancellation process.
+      data_type: VARCHAR
+    - name: subscriptionId
+      description: Identifies the subscription that is the subject of this cancellation
+        flow session. Joins to Subscription.id.
+      data_type: VARCHAR
+      foreign_key: Subscription.id
+    - name: reasonId
+      description: The unique identifier specifying the underlying reason for a cancellation
+        event within the CancelFlowV2Session.
+      data_type: VARCHAR
+    - name: reason
+      description: The specific reason or explanation provided for the cancellation
+        event within the CancelFlowV2Session.
+      data_type: VARCHAR
+    - name: rebuttalId
+      description: The identifier for the specific retention offer or counter-argument
+        presented to the user during a cancellation flow session.
+      data_type: VARCHAR
+    - name: rebuttal
+      description: Stores the response provided to either a customer's stated reason
+        for cancellation or to a retention offer presented during the cancellation
+        session.
+      data_type: VARCHAR
+    - name: shownReasons
+      description: The reasons for cancellation presented to the user during this
+        CancelFlowV2Session.
+      data_type: VARCHAR
+    - name: shownRebuttals
+      description: Records the specific retention offers or persuasive arguments displayed
+        to the user during the cancellation flow session.
+      data_type: VARCHAR
+    - name: action
+      description: Records the specific step or event occurring during the cancellation
+        flow session.
+      data_type: VARCHAR
+    - name: status
+      description: Indicates the current processing state or final outcome of the
+        CancelFlowV2 session.
+      data_type: VARCHAR
+    - name: rebuttalOptions
+      description: The set of counter-offers or alternative actions presented to a
+        user during a cancellation flow to encourage retention.
+      data_type: VARCHAR
+    - name: conditions
+      description: Records the specific criteria, rules, or states encountered or
+        evaluated during the cancellation flow session.
+      data_type: VARCHAR
+    - name: migratedFromSession
+      description: The identifier of the CancelFlowV2Session from which this session
+        was migrated or continued. Self-join to CancelFlowV2Session.id.
+      data_type: VARCHAR
+    - name: migratedFromSite
+      description: The source site from which the user's account or session was migrated.
+        Joins to Site.id.
+      data_type: VARCHAR
+      foreign_key: Site.id
+    - name: isOtherReason
+      description: Indicates whether the user selected 'Other' as the reason for cancellation
+        during the CancelFlowV2Session.
+      data_type: BOOLEAN
+    - name: shownActions
+      description: Lists the specific actions or choices presented to the user during
+        a CancelFlowV2Session.
+      data_type: VARCHAR
+    - name: isMultipleActions
+      description: Indicates if the user performed more than one action within the
+        cancel flow session.
+      data_type: BOOLEAN
+    - name: actions
+      description: Stores the chronological record of user and system activities performed
+        within the CancelFlowV2 session.
+      data_type: VARCHAR
+    - name: siteId
+      description: The unique identifier for the site where the cancellation flow
+        session was initiated. Joins to Site.id.
+      data_type: VARCHAR
+      foreign_key: Site.id
+    - name: isSplashScreen
+      description: Identifies if the initial screen displayed during the CancelFlowV2
+        session was a splash screen.
+      data_type: BOOLEAN
+    - name: conditionsV2
+      description: The set of conditions or criteria associated with the CancelFlowV2Session.
+      data_type: VARCHAR
+    - name: actionsV2
+      description: Records the specific actions performed by users and the system
+        throughout a CancelFlowV2 session.
+      data_type: VARCHAR
+    - name: actionsV2MultiStep
+      description: Represents the multi-step action sequence associated with a V2
+        cancellation flow session.
+      data_type: VARCHAR
+    - name: reasonPath
+      description: The sequence of reasons a user selected during the cancellation
+        flow.
+      data_type: VARCHAR
+    - name: statusContext
+      description: Describes the specific context or reasons associated with the current
+        status of the cancellation flow session.
+      data_type: VARCHAR
+  - name: NotificationLog
+    partition_by: createdAt
+    cluster_by:
+      - notificationId
+    description: Logs all notifications dispatched by the system, including recipient,
+      content, timestamp, and status, for audit and operational tracking.
+    columns:
+    - name: id
+      description: A unique identifier for each logged notification. Primary key.
+      data_type: VARCHAR
+      primary_key: true
+    - name: createdAt
+      description: Records the date and time the notification log entry was created.
+      data_type: DATETIME
+    - name: updatedAt
+      description: The timestamp indicating when the notification log entry was last
+        modified.
+      data_type: DATETIME
+    - name: subscriptionId
+      description: A unique identifier for the subscription associated with this notification
+        log entry. Joins to Subscription.id.
+      data_type: VARCHAR
+      foreign_key: Subscription.id
+    - name: notificationId
+      description: The unique identifier assigned to each logged notification event.
+      data_type: VARCHAR
+    - name: cost
+      description: The monetary cost incurred for sending this notification.
+      data_type: FLOAT
+    - name: body
+      description: The complete textual content or message body of the notification
+        sent to the recipient.
+      data_type: VARCHAR
+    - name: subject
+      description: The concise title or main topic of the notification recorded in
+        the log.
+      data_type: VARCHAR
+    - name: email
+      description: The email address to which this notification was sent.
+      data_type: VARCHAR
+    - name: phoneNumber
+      description: The contact phone number to which the notification was sent.
+      data_type: VARCHAR
+    - name: units
+      description: The numerical quantity of items, events, or resources associated
+        with the notification log entry.
+      data_type: INTEGER
+    - name: storefrontUserId
+      description: The unique identifier for the user who received this notification.
+        Joins to StorefrontUser.id.
+      data_type: VARCHAR
+      foreign_key: StorefrontUser.id
+    - name: siteId
+      description: Identifies the site associated with the recorded notification.
+        Joins to Site.id.
+      data_type: VARCHAR
+      foreign_key: Site.id
+  - name: Order
+    partition_by: createdAt
+    cluster_by:
+      - platformId
+      - subscriptionId
+    description: Records a customer's request to purchase specific products or services.
+    columns:
+    - name: id
+      description: A unique identifier for each order. Primary key.
+      data_type: VARCHAR
+      primary_key: true
+    - name: createdAt
+      description: The date and time when the order was initially placed or recorded
+        in the system.
+      data_type: DATETIME
+    - name: updatedAt
+      description: Records the exact date and time the order information was last
+        modified or updated.
+      data_type: DATETIME
+    - name: platformId
+      description: The unique identifier for the order on the e-commerce platform
+        (e.g., Shopify order ID).
+      data_type: VARCHAR
+    - name: deletedAt
+      description: Timestamp of when the order was soft-deleted, marking it as inactive.
+      data_type: DATETIME
+    - name: cancelledAt
+      description: The date and time the order was cancelled.
+      data_type: DATETIME
+    - name: platformNumber
+      description: A unique numerical identifier for the order on the platform (e.g.,
+        Shopify order number like
+      data_type: VARCHAR
+    - name: storefrontUserId
+      description: Identifies the user who placed the order. Joins to StorefrontUser.id.
+      data_type: VARCHAR
+      foreign_key: StorefrontUser.id
+    - name: deliveredAt
+      description: The timestamp indicating when the order was successfully delivered
+        to the customer.
+      data_type: DATETIME
+    - name: fulfillAt
+      description: The date and time an order is scheduled for fulfillment.
+      data_type: DATETIME
+    - name: prepaidSubscriptionId
+      description: The unique identifier for a prepaid subscription associated with
+        this order. Joins to Subscription.id for prepaid subscriptions.
+      data_type: VARCHAR
+      foreign_key: Subscription.id
+    - name: firstOrderInPrepaidSequence
+      description: Boolean flag indicating if this order is the first order within
+        a sequence of orders covered by a single prepaid payment.
+      data_type: BOOLEAN
+    - name: fulfillmentOrderCredit
+      description: The monetary credit amount applied to an order during its fulfillment
+        process, typically reflecting adjustments, partial refunds, or returns.
+      data_type: FLOAT
+    - name: note
+      description: Contains any additional free-form information or special instructions
+        related to the order.
+      data_type: VARCHAR
+    - name: processedAt
+      description: The timestamp indicating when the order's processing was completed.
+      data_type: DATETIME
+    - name: clientIp
+      description: The IP address of the client's device used to place the order.
+      data_type: VARCHAR
+    - name: totalPrice
+      description: The total monetary value of the order after all items, taxes, and
+        discounts have been applied.
+      data_type: FLOAT
+    - name: siteId
+      description: Identifies the site where the order was placed. Joins to Site.id.
+      data_type: VARCHAR
+      foreign_key: Site.id
+    - name: appId
+      description: Identifies the application system that initiated this order.
+      data_type: VARCHAR
+    - name: taxesIncluded
+      description: Specifies whether the order's total amount already incorporates
+        applicable taxes.
+      data_type: BOOLEAN
+    - name: taxExempt
+      description: Indicates whether the order is exempt from sales tax.
+      data_type: BOOLEAN
+    - name: hashedBillingAddress
+      description: A secure, irreversible representation of the customer's billing
+        address for the order, primarily used for internal validation and fraud prevention.
+      data_type: VARCHAR
+    - name: hashedShippingAddress
+      description: The one-way hashed version of the customer's shipping address,
+        used for secure identification and privacy within the order record.
+      data_type: VARCHAR
+    - name: unhashedBillingAddress
+      description: The plain-text billing address supplied by the customer for the
+        given order.
+      data_type: VARCHAR
+    - name: unhashedShippingAddress
+      description: The complete, unhashed physical address provided by the customer
+        for the delivery of this order.
+      data_type: VARCHAR
+    - name: currencyCode
+      description: The three-letter ISO 4217 code identifying the currency in which
+        the order's financial amounts are denominated.
+      data_type: VARCHAR
+    - name: subscriptionId
+      description: A unique identifier linking this order to a recurring subscription.
+        Joins to Subscription.id.
+      data_type: VARCHAR
+      foreign_key: Subscription.id
+    - name: shippingAddressId
+      description: The unique ID identifying the shipping address for this order.
+        Joins to Address.id.
+      data_type: VARCHAR
+      foreign_key: Address.id
+  - name: OrderLineItem
+    partition_by: createdAt
+    cluster_by:
+      - orderId
+      - productVariantId
+    description: Records a specific item, its quantity, and price within a customer's
+      order.
+    columns:
+    - name: id
+      description: A unique identifier for each distinct line item in an order. Primary
+        key.
+      data_type: VARCHAR
+      primary_key: true
+    - name: createdAt
+      description: The date and time this order line item was created.
+      data_type: DATETIME
+    - name: updatedAt
+      description: The date and time this order line item was last updated.
+      data_type: DATETIME
+    - name: productVariantId
+      description: The unique identifier for the product variant in this line item.
+        Joins to ProductVariant.id.
+      data_type: VARCHAR
+      foreign_key: ProductVariant.id
+    - name: orderId
+      description: The unique identifier for the order this line item belongs to.
+        Joins to Order.id.
+      data_type: VARCHAR
+      foreign_key: Order.id
+    - name: quantity
+      description: The number of units of the product detailed in this order line
+        item.
+      data_type: INTEGER
+    - name: platformId
+      description: Identifies the line item ID on the e-commerce platform (e.g., Shopify
+        line item ID).
+      data_type: VARCHAR
+    - name: priceWithoutDiscount
+      description: The original, undiscounted unit price of the item as listed on
+        this order line.
+      data_type: FLOAT
+    - name: groupId
+      description: A unique identifier used to group logically related order line
+        items within or across orders.
+      data_type: VARCHAR
+    - name: subscriptionLineId
+      description: The unique identifier for the subscription line item that generated
+        this order entry. Joins to SubscriptionLine.id.
+      data_type: VARCHAR
+      foreign_key: SubscriptionLine.id
+    - name: attributionGroupId
+      description: A unique identifier linking this order line item to a specific
+        attribution group for marketing and sales credit.
+      data_type: VARCHAR
+    - name: customAttributes
+      description: Stores additional, flexible, and non-standardized attributes specific
+        to this order line item.
+      data_type: JSON
+    - name: currencyCode
+      description: Specifies the currency used for the pricing of this individual
+        order line item.
+      data_type: VARCHAR
+    - name: pricePresentmentCurrencyCode
+      description: The ISO 4217 three-letter currency code representing the currency
+        in which the item's price is presented to the customer.
+      data_type: VARCHAR
+    - name: pricePresentmentAmount
+      description: The monetary amount representing the price presented or displayed
+        to the customer for the order line item.
+      data_type: FLOAT
+    - name: siteId
+      description: Identifies the site linked to this order line item. Joins to Site.id.
+      data_type: VARCHAR
+      foreign_key: Site.id
+  - name: Policy
+    description: Stores billing and delivery policies that define subscription intervals
+      and cycle limits.
+    columns:
+    - name: id
+      description: The unique identification number assigned to each policy. Primary
+        key. Referenced by Subscription.billingPolicyId, Subscription.deliveryPolicyId,
+        and Subscription.prepaidDeliveryPolicyId.
+      data_type: VARCHAR
+      primary_key: true
+    - name: createdAt
+      description: The date and time the policy was created.
+      data_type: DATETIME
+    - name: updatedAt
+      description: The date and time this policy record was last updated.
+      data_type: DATETIME
+    - name: interval
+      description: The specified time period for recurring policy activities (e.g.,
+        DAY, WEEK, MONTH, YEAR).
+      data_type: VARCHAR
+    - name: intervalCount
+      description: Specifies the number of intervals between billing or delivery cycles
+        (e.g., 2 with WEEK interval means every 2 weeks).
+      data_type: INTEGER
+    - name: maxCycles
+      description: The maximum number of billing/delivery cycles permitted for the
+        policy.
+      data_type: INTEGER
+    - name: minCycles
+      description: The minimum number of cycles required before cancellation is allowed.
+      data_type: INTEGER
+    - name: isMaxCycleV2
+      description: Indicates whether this policy uses V2 max cycle business rules.
+      data_type: BOOLEAN
+  - name: Product
+    description: Stores comprehensive details for every product offered by the business.
+    columns:
+    - name: id
+      description: A unique identifier for each product. Primary key. Referenced by
+        ProductVariant.productId.
+      data_type: VARCHAR
+      primary_key: true
+    - name: createdAt
+      description: The date and time the product record was first created.
+      data_type: DATETIME
+    - name: updatedAt
+      description: Records the last date and time this product's information was modified.
+      data_type: DATETIME
+    - name: siteId
+      description: The unique ID for the site where the product is offered. Joins
+        to Site.id.
+      data_type: VARCHAR
+      foreign_key: Site.id
+    - name: platformId
+      description: Identifies the product ID on the e-commerce platform (e.g., Shopify
+        product ID).
+      data_type: VARCHAR
+    - name: slug
+      description: The short, descriptive, and URL-safe text that identifies the product
+        for use in its web address.
+      data_type: VARCHAR
+    - name: imageSrc
+      description: The URL for the product's primary image.
+      data_type: VARCHAR
+    - name: title
+      description: The short, descriptive name used to identify the product.
+      data_type: VARCHAR
+    - name: deletedAt
+      description: Records the timestamp when a product was soft-deleted, indicating
+        it is no longer active but retained for historical purposes or potential restoration.
+      data_type: DATETIME
+    - name: status
+      description: Indicates the product's current operational state or availability
+        (e.g., ACTIVE, ARCHIVED, DRAFT).
+      data_type: VARCHAR
+    - name: isSwappable
+      description: Indicates whether this product is eligible for exchange or swapping
+        by a customer.
+      data_type: BOOLEAN
+    - name: canUpsell
+      description: Indicates if this product provides an opportunity to upsell customers
+        to a more expensive or feature-rich alternative.
+      data_type: BOOLEAN
+    - name: smsTitle
+      description: The product's short, descriptive title intended for use in SMS
+        messages.
+      data_type: VARCHAR
+    - name: smsOrder
+      description: Indicates whether the product is available for purchase via SMS.
+      data_type: INTEGER
+    - name: swapTitle
+      description: The title of the product when listed for exchange or swap.
+      data_type: VARCHAR
+    - name: isBuildable
+      description: Indicates whether the product can be manufactured or assembled.
+      data_type: BOOLEAN
+    - name: hideOnEditProductsPage
+      description: Controls whether this product is displayed on the product editing
+        page.
+      data_type: BOOLEAN
+    - name: metafields
+      description: Contains custom, structured data fields that provide additional
+        product details beyond standard attributes.
+      data_type: JSON
+    - name: hideOn1TimeUpsells
+      description: Controls if the product is hidden when one-time upsell offers are
+        displayed.
+      data_type: BOOLEAN
+    - name: oneTimeUpsellPercentageOff
+      description: The percentage discount offered for a one-time upsell when a customer
+        purchases this product.
+      data_type: FLOAT
+    - name: limitOneTimeUpsellQuantity
+      description: Maximum quantity of this product allowed when purchased as a one-time
+        upsell.
+      data_type: BOOLEAN
+    - name: shopifyTags
+      description: Tags assigned to the product for categorization, filtering, and
+        search on Shopify.
+      data_type: VARCHAR
+    - name: description
+      description: Provides a summary of the product's key features, specifications,
+        and benefits.
+      data_type: VARCHAR
+    - name: images
+      description: Holds all images associated with the product.
+      data_type: JSON
+    - name: showProductForCustomerTags
+      description: Determines if the product is shown to customers based on their
+        associated tags.
+      data_type: VARCHAR
+    - name: publicationId
+      description: Identifies the unique publication associated with this product.
+      data_type: VARCHAR
+  - name: ProductVariant
+    description: Represents a distinct and sellable version of a product, detailing
+      its specific differentiating attributes such as size, color, or material.
+    columns:
+    - name: id
+      description: A unique identifier for each distinct product variant. Primary
+        key. Referenced by OrderLineItem.productVariantId and SubscriptionLine.productVariantId.
+      data_type: VARCHAR
+      primary_key: true
+    - name: createdAt
+      description: The exact date and time this product variant was initially created.
+      data_type: DATETIME
+    - name: updatedAt
+      description: The timestamp of the most recent modification made to this product
+        variant record.
+      data_type: DATETIME
+    - name: price
+      description: The selling price of this specific product variant.
+      data_type: FLOAT
+    - name: title
+      description: A descriptive name for the specific product variant (e.g., "Small
+        / Blue").
+      data_type: VARCHAR
+    - name: platformId
+      description: Identifies the variant ID on the e-commerce platform (e.g., Shopify
+        variant ID).
+      data_type: VARCHAR
+    - name: productId
+      description: Identifies the parent product this variant belongs to. Joins to
+        Product.id.
+      data_type: VARCHAR
+      foreign_key: Product.id
+    - name: sku
+      description: A unique Stock Keeping Unit (SKU) assigned to each product variant
+        for inventory management.
+      data_type: VARCHAR
+    - name: deletedAt
+      description: The timestamp indicating when the ProductVariant was soft-deleted.
+      data_type: DATETIME
+    - name: image
+      description: The visual representation of this specific product variant.
+      data_type: VARCHAR
+    - name: compareAtPrice
+      description: The original or higher price of the product variant, displayed
+        for comparison against the current selling price to show a discount.
+      data_type: FLOAT
+    - name: outOfStockAt
+      description: Indicates the precise date and time when this product variant was
+        registered as out of stock.
+      data_type: DATETIME
+    - name: marketPrices
+      description: The prevailing market prices for this specific product variant.
+      data_type: JSON
+    - name: billingPriceOverride
+      description: The custom billing price for this product variant, overriding the
+        system's standard calculated price.
+      data_type: FLOAT
+    - name: enableOneTimeUpsell
+      description: Indicates whether a one-time upsell offer can be presented to customers
+        purchasing this product variant.
+      data_type: BOOLEAN
+    - name: hideOnEditProduct
+      description: Indicates whether this product variant should be hidden from view
+        when editing its parent product.
+      data_type: BOOLEAN
+    - name: siteId
+      description: The site where this product variant is offered. Joins to Site.id.
+      data_type: VARCHAR
+      foreign_key: Site.id
+  - name: Site
+    description: Stores identifying and descriptive information for each merchant/store
+      using the platform.
+    columns:
+    - name: id
+      description: The unique identifier for a specific site. Primary key. Referenced
+        by most other tables via siteId.
+      data_type: VARCHAR
+      primary_key: true
+    - name: createdAt
+      description: The date and time the site record was created in the system.
+      data_type: DATETIME
+    - name: updatedAt
+      description: The date and time the site's record was last modified.
+      data_type: DATETIME
+    - name: domain
+      description: Identifies the unique internet domain name for the respective site
+        (e.g., mystore.myshopify.com).
+      data_type: VARCHAR
+    - name: url
+      description: The web address of the site.
+      data_type: VARCHAR
+    - name: currencyCode
+      description: The three-letter ISO 4217 code identifying the site's main operating
+        currency.
+      data_type: VARCHAR
+    - name: email
+      description: The official contact email address for the site.
+      data_type: VARCHAR
+    - name: name
+      description: The primary name used to identify and refer to a specific business
+        site or location.
+      data_type: VARCHAR
+    - name: slug
+      description: The unique, URL-friendly string used in the site's web address
+        for readability and SEO.
+      data_type: VARCHAR
+    - name: hostname
+      description: The unique network identifier for the server hosting the site or
+        application.
+      data_type: VARCHAR
+    - name: syncing
+      description: Describes whether the site is currently undergoing or configured
+        for data synchronization activities.
+      data_type: BOOLEAN
+    - name: snippetsSyncing
+      description: Indicates the synchronization status of site-specific code snippets.
+      data_type: BOOLEAN
+    - name: notificationEmail
+      description: The email address designated to receive notifications for this
+        site.
+      data_type: VARCHAR
+    - name: notificationEmailUnderReview
+      description: Indicates whether the site's primary notification email address
+        is currently undergoing a verification or review process.
+      data_type: BOOLEAN
+    - name: urlShortener
+      description: This column identifies the service or tool used by the site to
+        create short, shareable, and trackable versions of longer web addresses.
+      data_type: VARCHAR
+    - name: freeTrialEndsAt
+      description: The date and time when the free trial period for a site expires.
+      data_type: DATETIME
+    - name: isPaying
+      description: Indicates whether the site is currently subscribed to a paid service
+        or plan.
+      data_type: BOOLEAN
+    - name: plivoPhoneNumber
+      description: The Plivo phone number associated with the site for all communication.
+      data_type: VARCHAR
+    - name: contactFirstName
+      description: The first name of the primary contact person associated with the
+        site.
+      data_type: VARCHAR
+    - name: contactLastName
+      description: This column stores the last name of the primary contact person
+        associated with a specific site.
+      data_type: VARCHAR
+    - name: klaviyoPublicKey
+      description: The public API key that identifies the Klaviyo account associated
+        with this site for data integration and tracking.
+      data_type: VARCHAR
+    - name: klaviyoPrivateKey
+      description: The confidential API key used by the site for secure authentication
+        and interaction with the Klaviyo platform.
+      data_type: VARCHAR
+    - name: transactionCut
+      description: The percentage of each transaction's value that the site retains
+        as revenue.
+      data_type: FLOAT
+    - name: groupRevenueCut
+      description: The portion of a site's total revenue that the parent group retains.
+      data_type: FLOAT
+    - name: hideGroupSubscriptions
+      description: Determines if group subscriptions are hidden from display across
+        the entire site.
+      data_type: BOOLEAN
+    - name: backfilling
+      description: Indicates whether a previously vacant resource or requirement at
+        the site is being filled.
+      data_type: BOOLEAN
+    - name: taxIncluded
+      description: A flag indicating whether displayed prices on this site incorporate
+        applicable taxes.
+      data_type: BOOLEAN
+    - name: roundUpAnchors
+      description: Holds the hyperlinks included in the site's round-up content.
+      data_type: BOOLEAN
+    - name: scriptLoadBehavior
+      description: Defines the intended behavior for how client-side scripts are loaded
+        on the site, influencing its performance and user experience.
+      data_type: VARCHAR
+    - name: transactionFee
+      description: The fee charged by the site for processing a transaction.
+      data_type: FLOAT
+    - name: stripeSubscriptionItemId
+      description: The unique Stripe identifier for a specific product or service
+        included in this site's subscription.
+      data_type: VARCHAR
+    - name: showSellingPlanId
+      description: The unique identifier for the selling plan that is designated to
+        be displayed or actively associated with the site.
+      data_type: BOOLEAN
+    - name: quarterlyOverride
+      description: A manually entered value that overrides the default or calculated
+        quarterly figure for a specific site.
+      data_type: BOOLEAN
+    - name: betaTesting
+      description: Indicates the current beta testing status of the site.
+      data_type: BOOLEAN
+    - name: transactionFeeAppliesToGroup
+      description: Indicates whether the transaction fee for this site is applied
+        to a group of items or transactions.
+      data_type: BOOLEAN
+    - name: orderPrefix
+      description: The unique alphanumeric code used to differentiate order numbers
+        originating from this specific site.
+      data_type: VARCHAR
+    - name: inventoryPolicy
+      description: Specifies the strategy for managing inventory levels and replenishment
+        at this site.
+      data_type: VARCHAR
+    - name: groupDiscountOffOneTime
+      description: The value of the one-time group discount offered by the site.
+      data_type: BOOLEAN
+    - name: featureSMSRemindersWithActions
+      description: Determines if the site sends SMS reminders that include calls to
+        action.
+      data_type: BOOLEAN
+    - name: updateShippingOnSubscriptionChanges
+      description: Indicates whether to automatically update customer shipping information
+        when their subscription changes on this site.
+      data_type: BOOLEAN
+    - name: vCardUrl
+      description: URL of the vCard file containing contact information for the site.
+      data_type: VARCHAR
+    - name: gorgiasAccountName
+      description: Identifies the Gorgias helpdesk account name associated with the
+        site.
+      data_type: VARCHAR
+    - name: gorgiasRefreshToken
+      description: The refresh token used to obtain new access tokens for the site's
+        integration with Gorgias.
+      data_type: VARCHAR
+    - name: pushWeekendOrders
+      description: Indicates if the site automatically pushes orders placed over the
+        weekend for processing.
+      data_type: BOOLEAN
+    - name: billMigratedSubs
+      description: The count of subscribers on this site whose billing has been migrated.
+      data_type: BOOLEAN
+    - name: billingWindow
+      description: The defined time interval for the site's billing cycle.
+      data_type: VARCHAR
+    - name: useRechargeTags
+      description: Specifies if the site utilizes tags from the Recharge Payments
+        platform.
+      data_type: BOOLEAN
+    - name: inviteLinkOverride
+      description: The URL to use as a custom invite link for this site, if different
+        from the system-generated default.
+      data_type: VARCHAR
+    - name: hideChooseSubscription
+      description: Controls whether the site hides the option for users to select
+        a subscription plan.
+      data_type: BOOLEAN
+    - name: storefrontAccessToken
+      description: A security token enabling programmatic access to a site's public
+        storefront data and functionality.
+      data_type: VARCHAR
+    - name: sitewidePortalPercentageOff
+      description: The sitewide percentage discount applicable when accessing the
+        site via a specific portal.
+      data_type: FLOAT
+    - name: hideOrderStatusWidget
+      description: Indicates whether the order status widget is suppressed from display
+        on the site.
+      data_type: BOOLEAN
+    - name: giftOnSkip
+      description: Configures whether the site provides a gift to users who choose
+        to skip an offering or interaction.
+      data_type: BOOLEAN
+    - name: multipassSecret
+      description: The confidential key enabling the site's multipass authentication
+        functionality.
+      data_type: VARCHAR
+    - name: lastRecurringBillingLock
+      description: Records the timestamp of the last time the site's recurring billing
+        process was locked, marking its completion and preventing reprocessing.
+      data_type: DATETIME
+    - name: cancelSubscriptionAfterAttempts
+      description: The number of failed payment attempts after which a subscription
+        is automatically cancelled.
+      data_type: INTEGER
+    - name: subscriptionBillingRetryInterval
+      description: Defines the time period the system waits before retrying a failed
+        subscription billing charge.
+      data_type: INTEGER
+    - name: contactEmail
+      description: The primary email address for general contact and inquiries related
+        to the site.
+      data_type: VARCHAR
+    - name: ianaTimezone
+      description: Provides the IANA timezone identifier for the site, ensuring accurate
+        local time and date calculations.
+      data_type: VARCHAR
+    - name: showShippingCalculationButton
+      description: Controls the visibility of the shipping calculation button on the
+        site.
+      data_type: BOOLEAN
+    - name: mergeSubscriptions
+      description: Determines whether the site automatically merges separate user
+        subscriptions into a single, unified subscription.
+      data_type: BOOLEAN
+    - name: skioSmsModifyOptionsMapping
+      description: Defines the site-specific configuration for mapping options used
+        to modify SMS messages within the Skio platform.
+      data_type: JSON
+    - name: twilioMessagingServiceSid
+      description: Identifies the unique Twilio Messaging Service used by this site
+        to handle its SMS and MMS communications.
+      data_type: VARCHAR
+    - name: lastRecurringBillingNotificationLock
+      description: Timestamp indicating when the site last applied a temporary restriction
+        on sending recurring billing notifications.
+      data_type: DATETIME
+    - name: migrationId
+      description: The unique identifier for the data migration event associated with
+        this site.
+      data_type: VARCHAR
+    - name: impactKey
+      description: Identifies the primary impact classification or type for the site.
+      data_type: VARCHAR
+    - name: impactSid
+      description: Unique identifier for an impact record associated with the site.
+      data_type: VARCHAR
+    - name: showNewCustomerPortal
+      description: Indicates whether the new customer portal should be displayed for
+        this site.
+      data_type: BOOLEAN
+    - name: zendeskToken
+      description: The authentication token enabling the site to interact with Zendesk
+        services.
+      data_type: VARCHAR
+    - name: syncAddressesToShopify
+      description: Indicates whether addresses associated with this site are synchronized
+        to Shopify.
+      data_type: BOOLEAN
+    - name: allowCustomerDiscountCodeStacking
+      description: Specifies whether customers can apply multiple discount codes to
+        a single order on the site.
+      data_type: BOOLEAN
+    - name: settings
+      description: Specifies the configurable parameters and preferences for the site.
+      data_type: JSON
+    - name: syncingRules
+      description: Specifies the exact parameters and logic for synchronizing data
+        to and from the site.
+      data_type: BOOLEAN
+    - name: showPauseInDashboard
+      description: Controls the display of the "pause site" feature within the site's
+        dashboard.
+      data_type: BOOLEAN
+    - name: showPauseInCustomerPortal
+      description: Specifies whether the option to pause services or subscriptions
+        is made visible to customers within their self-service portal.
+      data_type: BOOLEAN
+    - name: termsOfService
+      description: Details the official legal agreement outlining user responsibilities
+        and site policies.
+      data_type: VARCHAR
+    - name: autoMergeBilling
+      description: Determines whether the billing for this site is automatically merged
+        with other associated billing records.
+      data_type: BOOLEAN
+    - name: productDiscountFunctionId
+      description: The unique identifier for the product discount calculation logic
+        applied to products on this site.
+      data_type: VARCHAR
+    - name: gorgiasDashboardActionToken
+      description: Token used by the site to securely authenticate and execute actions
+        within the Gorgias customer service dashboard.
+      data_type: VARCHAR
+    - name: installedApps
+      description: Lists the software applications currently installed and active
+        on the site, essential for understanding site capabilities and dependencies.
+      data_type: JSON
+    - name: smartCarouselSettings
+      description: This column stores the advanced configuration parameters that control
+        the behavior and features of the site's smart carousel.
+      data_type: JSON
+    - name: dunningSettings
+      description: Configures the site's process for handling and pursuing overdue
+        payments.
+      data_type: JSON
+    - name: useFlycodeDunning
+      description: Indicates whether the site uses the Flycode system for managing
+        overdue payments.
+      data_type: BOOLEAN
+    - name: lastMigrationTime
+      description: The date and time this site was last migrated to a new platform
+        or environment.
+      data_type: DATETIME
+    - name: skioUninstalled
+      description: Documents the uninstallation of the Skio application or service
+        from the site.
+      data_type: BOOLEAN
+    - name: defaultCopyTranslationId
+      description: Identifies the default translation to be used for all copy content
+        on the site.
+      data_type: VARCHAR
+    - name: stripeSaasFee
+      description: The fee levied by Stripe for processing payments related to the
+        site's Software as a Service platform.
+      data_type: FLOAT
+    - name: previewSettings
+      description: Stores the configuration settings that define how the site is rendered
+        for preview purposes.
+      data_type: JSON
+    - name: skioSmsSettings
+      description: Specifies the SMS notification and messaging settings for the Skio
+        service on the site.
+      data_type: JSON
+    - name: qaAuthSettings
+      description: Manages the authentication settings for quality assurance (QA)
+        processes on the site.
+      data_type: JSON
+    - name: isMigrating
+      description: A boolean flag indicating if the site's data or services are presently
+        being migrated to a different server or platform.
+      data_type: BOOLEAN
+    - name: volumeDiscountShopifyFunctionSettings
+      description: Stores the configuration settings for the Shopify function that
+        manages and applies volume-based discounts on the site.
+      data_type: JSON
+    - name: globalBanner
+      description: Stores the content for the primary banner displayed consistently
+        across all pages of the website for site-wide announcements or branding.
+      data_type: VARCHAR
+    - name: taxShipping
+      description: Indicates if shipping is taxable for this site.
+      data_type: BOOLEAN
+    - name: defaultPermissionSettings
+      description: Defines the default access rights and security permissions automatically
+        applied to new content or user accounts within the site.
+      data_type: JSON
+    - name: dbabDiscountShopifyFunctionSettings
+      description: Configuration settings for the Shopify discount function implemented
+        on this site.
+      data_type: JSON
+    - name: hasActiveShopifySubscription
+      description: Indicates whether the associated site currently has an active Shopify
+        subscription.
+      data_type: BOOLEAN
+    - name: customerPortalVersion
+      description: Indicates the version of the customer portal implemented on the
+        site.
+      data_type: INTEGER
+    - name: collectionSettings
+      description: Specifies the display and organizational settings for all collections
+        of content or products presented on the site.
+      data_type: JSON
+    - name: isShopifyTokenOk
+      description: Denotes the current validity status of the Shopify API token used
+        by the site for integration.
+      data_type: BOOLEAN
+    - name: cpv3Settings
+      description: Holds the configuration settings for the site's Content Protection
+        Version 3 implementation.
+      data_type: JSON
+    - name: billingTiers
+      description: Defines the available billing plans or subscription tiers for the
+        site.
+      data_type: JSON
+    - name: isPlanPartnerDevelopment
+      description: Flag indicating if the site is part of a strategic plan for partner
+        development initiatives.
+      data_type: BOOLEAN
+    - name: planPublicDisplayName
+      description: The customer-visible name for the plan chosen for the site.
+      data_type: VARCHAR
+    - name: isPlanShopifyPlus
+      description: Indicates if the site is subscribed to the Shopify Plus plan.
+      data_type: BOOLEAN
+    - name: webhookRateLimits
+      description: Defines the constraints on the frequency or volume of webhook notifications
+        allowed for a particular site.
+      data_type: JSON
+    - name: stripeLoyaltySubscriptionItemId
+      description: The Stripe ID for the loyalty subscription item associated with
+        this site.
+      data_type: VARCHAR
+    - name: runningKlaviyoBackfill
+      description: Indicates whether a backfill process is currently active to populate
+        historical data into Klaviyo for the site.
+      data_type: BOOLEAN
+    - name: awsPhoneNumber
+      description: The Amazon Web Services contact phone number for the site.
+      data_type: VARCHAR
+    - name: shopifyFunctionIds
+      description: Unique identifiers for Shopify functions or applications configured
+        for the site.
+      data_type: JSON
+    - name: showPauseInCustomerPortalFixed
+      description: Determines whether the 'pause' option or status is visible to customers
+        within the customer portal for this site.
+      data_type: BOOLEAN
+  - name: StorefrontUser
+    description: The StorefrontUser table captures details for customers accessing
+      and interacting with the company's online retail storefront.
+    columns:
+    - name: id
+      description: A unique identifier for each user within the storefront system.
+        Primary key. Referenced by Address.storefrontUserId, AuditLog.storefrontUserId,
+        NotificationLog.storefrontUserId, Order.storefrontUserId, Subscription.storefrontUserId,
+        and Subscription.prepaidGiftRecipientId.
+      data_type: VARCHAR
+      primary_key: true
+    - name: createdAt
+      description: The date and time the StorefrontUser account was created.
+      data_type: DATETIME
+    - name: updatedAt
+      description: Stores the timestamp of the most recent update to the StorefrontUser's
+        profile or associated data.
+      data_type: DATETIME
+    - name: cognitoUsername
+      description: The unique username assigned to the storefront user in AWS Cognito.
+      data_type: VARCHAR
+    - name: email
+      description: The email address serving as the primary identifier and contact
+        point for the storefront user's account.
+      data_type: VARCHAR
+    - name: phoneNumber
+      description: The primary contact phone number for the StorefrontUser.
+      data_type: VARCHAR
+    - name: siteId
+      description: The unique identifier for the site this user belongs to. Joins
+        to Site.id.
+      data_type: VARCHAR
+      foreign_key: Site.id
+    - name: platformId
+      description: The user's ID on the e-commerce platform (e.g., Shopify customer
+        ID).
+      data_type: VARCHAR
+    - name: firstName
+      description: The given name of the user associated with the StorefrontUser account.
+      data_type: VARCHAR
+    - name: lastName
+      description: The family name of the individual user associated with the storefront.
+      data_type: VARCHAR
+    - name: userId
+      description: A unique identifier for a user within the storefront system.
+      data_type: VARCHAR
+    - name: storefrontUserGroupId
+      description: Identifies the group a storefront user belongs to, enabling tailored
+        experiences, pricing, or access.
+      data_type: VARCHAR
+    - name: cognitoUserId
+      description: AWS Cognito's unique identifier for the storefront user.
+      data_type: VARCHAR
+    - name: storefrontUserGroupStatus
+      description: The current status of a storefront user's group membership.
+      data_type: VARCHAR
+    - name: groupDiscountCode
+      description: The unique code that a StorefrontUser can apply to receive a group-specific
+        discount.
+      data_type: VARCHAR
+    - name: redactedAt
+      description: The timestamp indicating when a StorefrontUser's data was redacted.
+      data_type: DATETIME
+    - name: shopifyTags
+      description: Shopify-specific tags assigned to the storefront user for categorization
+        and segmentation.
+      data_type: VARCHAR
+    - name: qaToken
+      description: A token used to identify or provide special access for quality
+        assurance and testing purposes to a StorefrontUser account.
+      data_type: VARCHAR
+    - name: qaTokenUpdatedAt
+      description: The timestamp when the storefront user's Quality Assurance (QA)
+        token was last updated.
+      data_type: DATETIME
+    - name: removedAt
+      description: Stores the date and time a StorefrontUser was removed or deactivated
+        from the system.
+      data_type: DATETIME
+    - name: backupPaymentMethodId
+      description: The ID of the storefront user's backup payment method.
+      data_type: VARCHAR
+    - name: platformCreatedAt
+      description: The timestamp when the storefront user's account was created on
+        the platform.
+      data_type: DATETIME
+    - name: amountSpent
+      description: The total amount of money the user has spent across all transactions
+        on the storefront.
+      data_type: FLOAT
+    - name: numberOfOrders
+      description: The total number of orders placed by the storefront user.
+      data_type: INTEGER
+    - name: amountSpentCurrencyCode
+      description: The ISO 4217 currency code indicating the currency of the amount
+        spent by the storefront user.
+      data_type: VARCHAR
+    - name: creditDiscountCode
+      description: The unique identifier for a credit or discount offer associated
+        with the StorefrontUser's account.
+      data_type: VARCHAR
+    - name: isBlacklisted
+      description: Indicates if the storefront user is blacklisted from accessing
+        specific platform services or features.
+      data_type: BOOLEAN
+    - name: birthday
+      description: Captures the user's birth date to facilitate age verification and
+        enable personalized birthday promotions.
+      data_type: DATE
+    - name: tempSmsTransactionalOptIn
+      description: Indicates a storefront user's temporary consent to receive transactional
+        SMS messages.
+      data_type: BOOLEAN
+    - name: smsTransactionalOptIn
+      description: Indicates whether the storefront user has opted in to receive transactional
+        SMS messages.
+      data_type: BOOLEAN
+    - name: emailLower
+      description: The user's email address, stored in a lowercase format to ensure
+        consistency and facilitate efficient searches.
+      data_type: VARCHAR
+  - name: Subscription
+    partition_by: createdAt
+    cluster_by:
+      - status
+      - paymentMethodId
+    description: Captures and tracks the essential data for every customer's ongoing
+      or historical service subscription.
+    columns:
+    - name: id
+      description: A unique identifier for each subscription. Primary key. Referenced
+        by AnalyticsStateChangeTable.subscriptionId, AuditLog.subscriptionId, BillingAttempt.subscriptionId,
+        CancelFlowV2Session.subscriptionId, NotificationLog.subscriptionId, Order.subscriptionId,
+        Order.prepaidSubscriptionId, SubscriptionLine.subscriptionId, and SubscriptionLine.prepaidSubscriptionId.
+      data_type: VARCHAR
+      primary_key: true
+    - name: createdAt
+      description: Timestamp indicating the moment the subscription was first created.
+      data_type: DATETIME
+    - name: updatedAt
+      description: The most recent date a change was made to this subscription.
+      data_type: DATETIME
+    - name: billingPolicyId
+      description: The unique identifier for the billing policy that defines the charging
+        and payment terms. Joins to Policy.id.
+      data_type: VARCHAR
+      foreign_key: Policy.id
+    - name: deliveryPolicyId
+      description: Specifies the delivery policy that dictates how and when the subscribed
+        product or service is delivered. Joins to Policy.id.
+      data_type: VARCHAR
+      foreign_key: Policy.id
+    - name: shippingAddressId
+      description: The unique identifier for the shipping address associated with
+        this subscription. Joins to Address.id.
+      data_type: VARCHAR
+      foreign_key: Address.id
+    - name: paymentMethodId
+      description: Identifies the payment method linked to this subscription (e.g.,
+        Shopify payment method ID).
+      data_type: VARCHAR
+    - name: deliveryPrice
+      description: The price charged for delivering the items or services within this
+        subscription.
+      data_type: FLOAT
+    - name: status
+      description: Indicates the current operational status of the subscription (e.g.,
+        ACTIVE, PAUSED, CANCELLED).
+      data_type: VARCHAR
+    - name: currencyCode
+      description: Indicates the three-letter ISO 4217 code identifying the currency
+        for the subscription's pricing.
+      data_type: VARCHAR
+    - name: nextBillingDate
+      description: The date when the next payment for the subscription is due.
+      data_type: DATETIME
+    - name: storefrontUserId
+      description: The unique identifier for the user who owns this subscription.
+        Joins to StorefrontUser.id.
+      data_type: VARCHAR
+      foreign_key: StorefrontUser.id
+    - name: idempotencyKey
+      description: A unique token that guarantees a subscription creation or modification
+        request is processed exactly once, safeguarding against redundant operations.
+      data_type: VARCHAR
+    - name: platformId
+      description: Identifies the subscription ID on the e-commerce platform (e.g.,
+        Shopify subscription contract ID).
+      data_type: VARCHAR
+    - name: cancelledAt
+      description: The date and time when the subscription was cancelled.
+      data_type: DATETIME
+    - name: statusContext
+      description: The supplementary information detailing the current state of the
+        subscription (e.g., cancellation reason).
+      data_type: VARCHAR
+    - name: lastBillingAttemptAt
+      description: Records the timestamp of the last billing attempt for the subscription.
+      data_type: DATETIME
+    - name: migrationIndex
+      description: Indicates the migration stage or group identifier for the subscription.
+      data_type: INTEGER
+    - name: customAttributes
+      description: Captures flexible, additional information unique to each subscription
+        beyond standard details.
+      data_type: JSON
+    - name: prepaidDeliveryPolicyId
+      description: The unique identifier for the prepaid delivery policy applied to
+        this subscription. Joins to Policy.id.
+      data_type: VARCHAR
+      foreign_key: Policy.id
+    - name: prepaidProductPricesPerDelivery
+      description: The prepaid price for individual products included in each subscription
+        delivery.
+      data_type: JSON
+    - name: cyclesCompleted
+      description: The number of billing cycles that have been successfully completed
+        for this subscription.
+      data_type: INTEGER
+    - name: deliveryPriceOverride
+      description: The manually specified delivery price that overrides the standard
+        or calculated delivery cost for this subscription.
+      data_type: FLOAT
+    - name: creditPerOrder
+      description: The amount of credit provided for each order placed under the subscription.
+      data_type: FLOAT
+    - name: metadata
+      description: Captures arbitrary, non-standard attributes or custom data associated
+        with the subscription.
+      data_type: JSON
+    - name: pausedAt
+      description: The date and time a subscription was temporarily suspended.
+      data_type: DATETIME
+    - name: siteId
+      description: The unique identifier for the site this subscription belongs to.
+        Joins to Site.id.
+      data_type: VARCHAR
+      foreign_key: Site.id
+    - name: prepaidGiftRecipientId
+      description: The ID of the user designated as the recipient of a prepaid gift
+        subscription. Joins to StorefrontUser.id.
+      data_type: VARCHAR
+      foreign_key: StorefrontUser.id
+    - name: originOrderId
+      description: The unique identifier of the order that led to the creation of
+        this subscription. Joins to Order.id.
+      data_type: VARCHAR
+      foreign_key: Order.id
+    - name: dunningStoryId
+      description: References the specific dunning story or sequence of overdue payment
+        notifications configured for this subscription.
+      data_type: VARCHAR
+    - name: note
+      description: Records supplementary information, special conditions, or internal
+        comments pertaining to the subscription.
+      data_type: VARCHAR
+    - name: isPickup
+      description: Indicates if the customer will pick up their subscription order.
+      data_type: BOOLEAN
+    - name: isDigital
+      description: Indicates whether the subscription is for a digital product or
+        service.
+      data_type: BOOLEAN
+    - name: streakCount
+      description: The number of consecutive periods the subscription has been active.
+      data_type: INTEGER
+    - name: streakExpiresAt
+      description: The specific date and time when the user's current consecutive
+        activity streak, linked to their subscription, will expire if the necessary
+        condition for its continuation is not met.
+      data_type: DATETIME
+    - name: churnScore
+      description: A numerical value representing the calculated probability that
+        a subscription will be canceled.
+      data_type: FLOAT
+    - name: churnPredictedAt
+      description: The date and time at which a customer's subscription was predicted
+        to be at risk of churn.
+      data_type: DATETIME
+    - name: churnRiskReasons
+      description: The specific reasons or factors identified as contributing to a
+        subscriber's elevated risk of cancelling their subscription.
+      data_type: JSON
+  - name: SubscriptionLine
+    partition_by: createdAt
+    cluster_by:
+      - subscriptionId
+      - productVariantId
+    description: Describes each product or service included in a customer's subscription.
+    columns:
+    - name: id
+      description: The unique identifier for a specific line item within a subscription.
+        Primary key. Referenced by OrderLineItem.subscriptionLineId.
+      data_type: VARCHAR
+      primary_key: true
+    - name: updatedAt
+      description: Records the date and time when any detail of this subscription
+        line was last updated.
+      data_type: DATETIME
+    - name: createdAt
+      description: The date and time this specific subscription line was created.
+      data_type: DATETIME
+    - name: subscriptionId
+      description: Identifies the parent subscription this line item belongs to. Joins
+        to Subscription.id.
+      data_type: VARCHAR
+      foreign_key: Subscription.id
+    - name: priceWithoutDiscount
+      description: The price of the subscription line item before any discounts are
+        applied.
+      data_type: FLOAT
+    - name: quantity
+      description: The number of units or services specified for this subscription
+        line.
+      data_type: INTEGER
+    - name: sellingPlanId
+      description: The unique identifier for the selling plan (e.g., monthly subscription,
+        one-time purchase) applied to this line item.
+      data_type: VARCHAR
+    - name: productVariantId
+      description: The unique identifier for the product variant included in this
+        subscription line. Joins to ProductVariant.id.
+      data_type: VARCHAR
+      foreign_key: ProductVariant.id
+    - name: platformId
+      description: Identifies the line item ID on the e-commerce platform (e.g., Shopify
+        subscription line ID).
+      data_type: VARCHAR
+    - name: taxable
+      description: Indicates whether this subscription line item is subject to sales
+        or other applicable taxes.
+      data_type: BOOLEAN
+    - name: groupId
+      description: Identifies the group to which this subscription line belongs.
+      data_type: VARCHAR
+    - name: reChargeId
+      description: The unique identifier from the ReCharge subscription platform for
+        this line item (used during migrations).
+      data_type: VARCHAR
+    - name: boldId
+      description: The unique identifier from Bold subscriptions for this line item
+        (used during migrations).
+      data_type: VARCHAR
+    - name: removedAt
+      description: The timestamp indicating when the subscription line was logically
+        removed or deactivated from the subscription.
+      data_type: DATETIME
+    - name: ordersRemaining
+      description: The quantity of items or services remaining to be fulfilled for
+        this subscription line.
+      data_type: INTEGER
+    - name: isPrepaid
+      description: Indicates if the payment for this subscription line was received
+        in advance of the service period.
+      data_type: BOOLEAN
+    - name: prepaidSubscriptionId
+      description: Links this subscription line to its associated prepaid subscription.
+        Joins to Subscription.id.
+      data_type: VARCHAR
+      foreign_key: Subscription.id
+    - name: customAttributes
+      description: A flexible collection of additional key-value attributes providing
+        extended, non-standard information about the subscription line.
+      data_type: JSON
+    - name: titleOverride
+      description: The custom display title for the subscription line item, replacing
+        its default product title.
+      data_type: VARCHAR
+    - name: legacySubscriptionId
+      description: The identifier for the subscription from a prior system to which
+        this subscription line belongs.
+      data_type: VARCHAR
+    - name: siteId
+      description: Identifies the site to which this subscription line applies. Joins
+        to Site.id.
+      data_type: VARCHAR
+      foreign_key: Site.id
+- name: largedata-380204.skio_dosedaily_co
+  tables:
+  - name: Address
+    type: table
+    description: Stores all physical and mailing address information for various entities
+      within the business.
+    columns:
+    - name: id
+      description: A unique identifier for each distinct address record. Primary key.
+      data_type: VARCHAR
+      primary_key: true
+    - name: createdAt
+      description: The timestamp indicating when this address record was first created
+        in the system.
+      data_type: VARCHAR
+    - name: updatedAt
+      description: Stores the timestamp indicating the last time the address record
+        was modified.
+      data_type: VARCHAR
+    - name: address1
+      description: The primary street address line for the address.
+      data_type: VARCHAR
+    - name: address2
+      description: Stores the second line of an address for details such as apartment,
+        suite, or unit numbers.
+      data_type: VARCHAR
+    - name: city
+      description: The name of the city where the address is located.
+      data_type: VARCHAR
+    - name: company
+      description: The company or organization name associated with this address.
+      data_type: VARCHAR
+    - name: country
+      description: The sovereign nation or territory where the address is physically
+        located.
+      data_type: VARCHAR
+    - name: firstName
+      description: The given name of the individual associated with this address record.
+      data_type: VARCHAR
+    - name: phoneNumber
+      description: The primary contact phone number associated with this address.
+      data_type: VARCHAR
+    - name: province
+      description: The high-level administrative division of a country, such as a
+        state or region, where the address is situated.
+      data_type: VARCHAR
+    - name: zip
+      description: The zip column stores the postal code associated with a given address.
+      data_type: VARCHAR
+    - name: lastName
+      description: The last name of the individual associated with this address record.
+      data_type: VARCHAR
+    - name: storefrontUserId
+      description: The unique identifier of the user who owns this address. Joins
+        to StorefrontUser.id.
+      data_type: VARCHAR
+      foreign_key: StorefrontUser.id
+    - name: platformId
+      description: Identifies the unique platform or system associated with this address
+        record (e.g., Shopify customer ID).
+      data_type: VARCHAR
+    - name: doorCode
+      description: The code used for entry to the property.
+      data_type: VARCHAR
+    - name: siteId
+      description: Unique identifier for the site associated with this address. Joins
+        to Site.id.
+      data_type: VARCHAR
+      foreign_key: Site.id
+  - name: AnalyticsCancelFlowSession
+    type: table
+    description: This table stores analytical data on user sessions where a multi-step
+      process or 'flow' was initiated but prematurely cancelled.
+    columns:
+    - name: sessionId
+      description: Unique identifier for a user's session within the cancellation
+        flow analytics.
+      data_type: VARCHAR
+    - name: subscriptionId
+      description: A unique identifier for the subscription undergoing the cancellation
+        flow.
+      data_type: VARCHAR
+    - name: createdAt
+      description: The timestamp when this analytics cancel flow session was created.
+      data_type: VARCHAR
+    - name: localCreatedAt
+      description: Timestamp of when the cancellation flow session was locally created
+        on the user's device.
+      data_type: DATETIME
+    - name: sessionStatus
+      description: Records the current state or final outcome of a user's session
+        within the cancellation flow.
+      data_type: VARCHAR
+    - name: siteId
+      description: A unique identifier indicating the specific website or application
+        where a user's cancel flow session originated.
+      data_type: VARCHAR
+    - name: type
+      description: Describes the specific category or characteristic of the recorded
+        cancellation flow session.
+      data_type: VARCHAR
+    - name: reasonPath
+      description: Documents the distinct sequence of reasons or decisions made by
+        a user leading to the cancellation of a session.
+      data_type: VARCHAR
+    - name: parsedPath
+      description: The standardized URL path indicating the user's location within
+        the analytics cancel flow session.
+      data_type: VARCHAR
+    - name: ordersAfterSaved
+      description: A count of orders placed by the user after a 'save' action was
+        performed within the cancellation flow session.
+      data_type: FLOAT
+    - name: revenueAfterSaved
+      description: The revenue retained from customers who were successfully prevented
+        from canceling their service during the analytics cancel flow session.
+      data_type: FLOAT
+    - name: subscriptionMRR
+      description: The Monthly Recurring Revenue (MRR) of the subscription involved
+        in the cancellation flow session.
+      data_type: FLOAT
+    - name: storefrontUserEmail
+      description: The email address of the user who engaged in a storefront cancellation
+        flow session.
+      data_type: VARCHAR
+  - name: AnalyticsDunningWindow
+    type: table
+    description: Provides analytical data on the timing and effectiveness of dunning
+      windows to optimize overdue payment collection strategies.
+    columns:
+    - name: id
+      description: Uniquely identifies each record in the AnalyticsDunningWindow table.
+      data_type: VARCHAR
+      primary_key: true
+    - name: enteredDunningStateChangeId
+      description: The unique identifier for the dunning state change event that triggered
+        entry into this dunning window.
+      data_type: VARCHAR
+    - name: subscriptionId
+      description: A unique identifier for the customer subscription being analyzed
+        within a dunning window.
+      data_type: VARCHAR
+    - name: siteId
+      description: Unique identifier for the specific website or application generating
+        the analytics and subject to dunning actions.
+      data_type: VARCHAR
+    - name: localEnteredAt
+      description: The local timestamp at which the dunning window record was initially
+        created or processed.
+      data_type: DATETIME
+    - name: exitedDunningStateChangeId
+      description: Identifier for the dunning state change event that marks an exit
+        from a dunning state.
+      data_type: VARCHAR
+    - name: localExitedAt
+      description: Records the local timestamp when an account concluded its active
+        phase within the dunning window.
+      data_type: DATETIME
+    - name: enteredAt
+      description: The timestamp indicating when this specific dunning window record
+        was entered into the analytics system.
+      data_type: DATETIME
+    - name: exitedAt
+      description: The timestamp when the customer exited the dunning window.
+      data_type: DATETIME
+    - name: exitedStatus
+      description: The status indicating the final outcome of a customer's dunning
+        window.
+      data_type: VARCHAR
+    - name: exitedStatusContext
+      description: Provides the specific reason or context for the dunning window's
+        closure.
+      data_type: VARCHAR
+    - name: billingAttemptCount
+      description: Represents the number of billing attempts made within a specific
+        dunning window.
+      data_type: INTEGER
+    - name: recoveredRevenue
+      description: The total revenue successfully collected from customers through
+        dunning processes after an initial payment failure.
+      data_type: FLOAT
+    - name: recoveredRevenueDiscount
+      description: The monetary value of discounts granted to customers to successfully
+        recover overdue revenue within the analytics dunning window.
+      data_type: FLOAT
+    - name: queuedRevenue
+      description: The total revenue from overdue accounts that is currently being
+        targeted for collection through the dunning process within this analytics
+        window.
+      data_type: FLOAT
+    - name: latestBillingAttemptErrorMessage
+      description: The error message returned during the most recent billing attempt.
+      data_type: VARCHAR
+    - name: latestBillingAttemptLocalCreatedAt
+      description: The local timestamp of the customer's most recent billing attempt.
+      data_type: DATETIME
+    - name: latestFailedBillingAttemptErrorMessage
+      description: The error message provided by the payment processor for the most
+        recent unsuccessful billing attempt.
+      data_type: VARCHAR
+    - name: latestFailedBillingAttemptLocalCreatedAt
+      description: The local date and time when the most recent billing attempt failed,
+        relevant for dunning analysis.
+      data_type: DATETIME
+    - name: subscriptionLocalNextBillingDate
+      description: The next scheduled billing date for the subscription, in local
+        time.
+      data_type: DATETIME
+    - name: storefrontUserEmail
+      description: Email address of the storefront user whose dunning activity is
+        being analyzed.
+      data_type: VARCHAR
+  - name: AnalyticsStateChangeTable
+    type: table
+    description: Records all state changes occurring across analytics data, configurations,
+      and processing pipelines.
+    columns:
+    - name: id
+      description: Uniquely identifies each record representing a change in the analytics
+        state. Primary key.
+      data_type: VARCHAR
+      primary_key: true
+    - name: startedAt
+      description: The timestamp when an analytics state change began.
+      data_type: DATETIME
+    - name: localStartedAt
+      description: The local timestamp recorded on the client device at the beginning
+        of an analytics state change event.
+      data_type: DATETIME
+    - name: endedAt
+      description: The timestamp marking the conclusion of the analytics state change
+        event.
+      data_type: DATETIME
+    - name: localEndedAt
+      description: The local timestamp indicating when the associated analytics state
+        change event or session ended.
+      data_type: DATETIME
+    - name: oldStatus
+      description: The status an analytics record held immediately before a state
+        change was initiated.
+      data_type: VARCHAR
+    - name: oldStatusContext
+      description: Provides the specific contextual details or additional information
+        about the analytics entity's status immediately preceding a recorded state
+        change.
+      data_type: VARCHAR
+    - name: newStatus
+      description: The status an analytics entity transitions to.
+      data_type: VARCHAR
+    - name: subscriptionId
+      description: The unique identifier for the subscription associated with this
+        state change. Joins to Subscription.id.
+      data_type: VARCHAR
+      foreign_key: Subscription.id
+    - name: newStatusContext
+      description: Describes the contextual information pertaining to the new analytical
+        state.
+      data_type: VARCHAR
+    - name: siteId
+      description: A unique identifier for the site whose analytics state change is
+        recorded. Joins to Site.id.
+      data_type: VARCHAR
+      foreign_key: Site.id
+  - name: AnalyticsSubscriberForCohort
+    type: table
+    description: Records subscribers grouped into specific cohorts to facilitate analysis
+      of their collective behavior, retention, and value over time.
+    columns:
+    - name: storefrontUserId
+      description: A unique identifier for a user within the storefront system, primarily
+        used for subscriber analytics and cohort tracking.
+      data_type: VARCHAR
+    - name: siteId
+      description: A unique identifier for the specific website or platform associated
+        with the subscriber cohort analytics data.
+      data_type: VARCHAR
+    - name: segmentId
+      description: A unique identifier representing the subscriber's assigned market
+        or user segment.
+      data_type: VARCHAR
+    - name: cohortDate
+      description: The date a subscriber first joined the business, defining their
+        analytical cohort for reporting.
+      data_type: DATE
+    - name: revenueAllTime
+      description: The cumulative revenue generated by all subscribers within this
+        cohort since their acquisition.
+      data_type: FLOAT
+    - name: revenueAllTimeDiscount
+      description: The total monetary value of all discounts applied to a subscriber's
+        purchases over their entire lifetime with the service.
+      data_type: FLOAT
+    - name: revenue3Month
+      description: Total revenue generated by a subscriber cohort over a three-month
+        period.
+      data_type: FLOAT
+    - name: revenue3MonthDiscount
+      description: The total revenue collected from subscriber cohorts over a three-month
+        period specifically generated from discounted subscriptions.
+      data_type: FLOAT
+    - name: revenue6Month
+      description: The cumulative revenue generated from a subscriber within the six
+        months following their assignment to a specific cohort.
+      data_type: FLOAT
+    - name: revenue6MonthDiscount
+      description: The total revenue generated from a subscriber within their first
+        six months, specifically from transactions where a discount was applied.
+      data_type: FLOAT
+    - name: revenue12Month
+      description: Total revenue generated from subscribers within the cohort over
+        a 12-month period.
+      data_type: FLOAT
+    - name: revenue12MonthDiscount
+      description: The total revenue generated by the subscriber over the past 12
+        months, net of any applied discounts.
+      data_type: FLOAT
+    - name: orderCountAllTime
+      description: The total number of orders placed by a subscriber across their
+        entire history.
+      data_type: INTEGER
+    - name: daysActive
+      description: The total count of distinct days a subscriber within a specific
+        cohort has recorded any form of activity or engagement.
+      data_type: INTEGER
+    - name: quantityTotal
+      description: The total quantity of units or items associated with the subscribers
+        in this cohort.
+      data_type: INTEGER
+    - name: lineCountTotal
+      description: Total count of all service lines associated with subscribers within
+        the analytical cohort.
+      data_type: INTEGER
+    - name: isCancelledOnSameDay
+      description: Indicates whether the subscriber cancelled their subscription on
+        the same day it was started.
+      data_type: BOOLEAN
+    - name: firstCancellationDate
+      description: The date a subscriber first cancelled their service.
+      data_type: DATE
+    - name: lastCancellationDate
+      description: The date a subscriber in the cohort last cancelled their subscription.
+      data_type: DATE
+    - name: isCancelledBeforeSecondOrder
+      description: Indicates whether a subscriber cancelled their subscription before
+        placing a second order.
+      data_type: BOOLEAN
+    - name: secondOrderLocalCreatedAtDate
+      description: The local date and time a subscriber's second significant event
+        or milestone was recorded.
+      data_type: DATE
+    - name: secondOrderLocalCreatedAt
+      description: The local timestamp of a subscriber's second major business event
+        or state transition, tracked for cohort analysis.
+      data_type: DATETIME
+    - name: isMigrated
+      description: Indicates if the subscriber linked to this analytics cohort record
+        has undergone a migration.
+      data_type: BOOLEAN
+    - name: currentStatus
+      description: The present operational state of the subscriber as tracked within
+        their analytics cohort.
+      data_type: VARCHAR
+  - name: AnalyticsSubscriberStateChangeTable
+    type: table
+    description: Records every change in a subscriber's state for analytical purposes.
+    columns:
+    - name: startedAt
+      description: The time the subscriber entered the recorded state.
+      data_type: VARCHAR
+    - name: localStartedAt
+      description: The timestamp, recorded on the local device, when the subscriber
+        state change event was initiated.
+      data_type: DATETIME
+    - name: endedAt
+      description: The timestamp indicating when a subscriber's specific state ended.
+      data_type: VARCHAR
+    - name: localEndedAt
+      description: The timestamp, in the local timezone, when the subscriber's state
+        period ended.
+      data_type: DATETIME
+    - name: oldStatus
+      description: The subscriber's status immediately preceding the recorded change.
+      data_type: VARCHAR
+    - name: newStatus
+      description: The subscriber's final status recorded after a change in their
+        subscription state.
+      data_type: VARCHAR
+    - name: storefrontUserId
+      description: Unique identifier for the storefront user whose state changes are
+        recorded. Joins to StorefrontUser.id.
+      data_type: VARCHAR
+      foreign_key: StorefrontUser.id
+    - name: siteId
+      description: A unique identifier for the site where the subscriber state change
+        was recorded. Joins to Site.id.
+      data_type: VARCHAR
+      foreign_key: Site.id
+  - name: AnalyticsSubscriptionForCohort
+    type: table
+    description: Records the analytics subscription details for defined user cohorts.
+    columns:
+    - name: id
+      description: Unique identifier for each record of subscription analytics pertaining
+        to a specific user cohort.
+      data_type: VARCHAR
+      primary_key: true
+    - name: createdAt
+      description: Timestamp indicating when the analytics subscription record for
+        this cohort was first created.
+      data_type: VARCHAR
+    - name: updatedAt
+      description: Denotes the last time the subscription details for this analytics
+        cohort were updated.
+      data_type: VARCHAR
+    - name: billingPolicyId
+      description: Identifies the specific billing policy used for this analytics
+        subscription for the cohort.
+      data_type: VARCHAR
+    - name: deliveryPolicyId
+      description: References the unique policy governing the method, frequency, and
+        format for delivering analytics data to the subscribed cohort.
+      data_type: VARCHAR
+    - name: shippingAddressId
+      description: The unique identifier for the shipping address associated with
+        an analytics subscription within a specific cohort.
+      data_type: VARCHAR
+    - name: paymentMethodId
+      description: The unique identifier for the payment method used for this subscription
+        within the analytical cohort.
+      data_type: VARCHAR
+    - name: deliveryPrice
+      description: The price associated with the delivery of subscription components
+        to the cohort.
+      data_type: VARCHAR
+    - name: status
+      description: Indicates the current operational state of the analytics subscription
+        for a given cohort.
+      data_type: VARCHAR
+    - name: currencyCode
+      description: The three-letter ISO 4217 code representing the currency of the
+        subscription's financial data.
+      data_type: VARCHAR
+    - name: nextBillingDate
+      description: The next scheduled date for a subscription payment for a user within
+        this analytics cohort.
+      data_type: VARCHAR
+    - name: storefrontUserId
+      description: The unique identifier for a user within the storefront platform
+        whose subscription activity is being analyzed for cohort analytics.
+      data_type: VARCHAR
+    - name: idempotencyKey
+      description: Unique key preventing duplicate processing of a cohort's analytics
+        subscription request upon retry.
+      data_type: VARCHAR
+    - name: platformId
+      description: The unique identifier for the digital platform associated with
+        the cohort's subscription and analytics data.
+      data_type: VARCHAR
+    - name: cancelledAt
+      description: The timestamp indicating when the analytics subscription for the
+        cohort was cancelled.
+      data_type: VARCHAR
+    - name: statusContext
+      description: Describes the specific context or explanatory details for the current
+        status of the analytics subscription for the cohort.
+      data_type: VARCHAR
+    - name: lastBillingAttemptAt
+      description: Stores the timestamp of the most recent attempt to bill a subscriber
+        for their service within a specific analytics cohort.
+      data_type: VARCHAR
+    - name: migrationIndex
+      description: An index quantifying the degree of user movement between subscription
+        plans or statuses within a specific cohort.
+      data_type: INTEGER
+    - name: customAttributes
+      description: A flexible field storing supplementary, custom attributes for the
+        cohort's analytics subscription.
+      data_type: VARCHAR
+    - name: prepaidDeliveryPolicyId
+      description: Identifies the specific prepaid delivery policy applied to the
+        subscription analytics data for this cohort.
+      data_type: VARCHAR
+    - name: prepaidProductPricesPerDelivery
+      description: The prepaid price of products included in each delivery instance
+        for the analytical subscription cohort.
+      data_type: VARCHAR
+    - name: cyclesCompleted
+      description: Indicates the total number of subscription periods or billing cycles
+        successfully completed by a specific user cohort.
+      data_type: INTEGER
+    - name: deliveryPriceOverride
+      description: The custom delivery price applied to a subscription, overriding
+        the standard calculated cost.
+      data_type: INTEGER
+    - name: creditPerOrder
+      description: The average monetary credit or discount applied per order for a
+        specific subscription analytics cohort.
+      data_type: VARCHAR
+    - name: metadata
+      description: Contains supplementary, often unstructured, data providing additional
+        context or attributes for the analytics subscription.
+      data_type: VARCHAR
+    - name: pausedAt
+      description: The timestamp indicating when the analytics subscription for a
+        cohort was paused.
+      data_type: VARCHAR
+    - name: siteId
+      description: The unique identifier for the website or application associated
+        with the analytics subscription data for a specific cohort.
+      data_type: VARCHAR
+    - name: prepaidGiftRecipientId
+      description: The unique identifier of the user who received a subscription that
+        was purchased as a prepaid gift.
+      data_type: VARCHAR
+    - name: originOrderId
+      description: Identifies the initial order that led to a customer's subscription
+        being analyzed within a specific analytics cohort.
+      data_type: VARCHAR
+    - name: dunningStoryId
+      description: Links a subscription to the specific dunning process story it underwent
+        within its analytics cohort.
+      data_type: VARCHAR
+    - name: note
+      description: Contains an optional free-text note for contextual information
+        or remarks about the cohort's analytics subscription data.
+      data_type: VARCHAR
+    - name: isPickup
+      description: Indicates if the subscription or its associated physical items
+        were picked up by the customer.
+      data_type: BOOLEAN
+    - name: isDigital
+      description: Indicates if the analytics subscription product or service is digital.
+      data_type: BOOLEAN
+    - name: streakCount
+      description: The count of consecutive active subscription periods for a user
+        within the cohort.
+      data_type: INTEGER
+    - name: streakExpiresAt
+      description: The precise moment the current analytics subscription streak for
+        the cohort is scheduled to expire.
+      data_type: VARCHAR
+    - name: churnScore
+      description: This score quantifies the predicted probability of a customer discontinuing
+        their AnalyticsSubscription within the defined cohort.
+      data_type: VARCHAR
+    - name: churnPredictedAt
+      description: The timestamp when churn was predicted for a specific subscription
+        cohort.
+      data_type: VARCHAR
+    - name: churnRiskReasons
+      description: Describes the specific reasons or indicators that classify a subscription
+        within a cohort as having a high risk of churn.
+      data_type: VARCHAR
+    - name: skipCycleBillingDate
+      description: Indicates whether the scheduled billing date for this subscription
+        cohort's cycle is to be skipped.
+      data_type: VARCHAR
+    - name: maxStreakCount
+      description: The highest number of consecutive periods a subscriber within the
+        cohort maintained an active subscription.
+      data_type: INTEGER
+    - name: subscriptionMRRRate
+      description: The rate measuring the Monthly Recurring Revenue (MRR) contributed
+        or changed by a subscription within an analytics cohort.
+      data_type: FLOAT
+    - name: subscriptionMRR
+      description: The aggregate monthly recurring revenue generated from subscriptions
+        for the cohort.
+      data_type: FLOAT
+    - name: subscriptionLocalMRR
+      description: The Monthly Recurring Revenue (MRR) generated from subscriptions
+        for a given cohort, denominated in the local currency.
+      data_type: FLOAT
+    - name: subscriptionMRRDiscounts
+      description: The total value of discounts applied to the Monthly Recurring Revenue
+        generated by subscriptions within the cohort.
+      data_type: FLOAT
+    - name: subscriptionLocalMRRDiscounts
+      description: The total local currency amount of discounts applied to the Monthly
+        Recurring Revenue (MRR) from subscriptions within the cohort.
+      data_type: FLOAT
+    - name: subscriptionQueuedRevenue
+      description: The total value of recognized subscription revenue for a cohort
+        that is scheduled to be earned in future periods.
+      data_type: FLOAT
+    - name: subscriptionQueuedRevenueDiscounts
+      description: Total discounts queued to reduce future subscription revenue.
+      data_type: FLOAT
+    - name: subscriptionLocalQueuedRevenue
+      description: Local currency value of subscription revenue that is queued for
+        processing or recognition.
+      data_type: FLOAT
+    - name: subscriptionLocalQueuedRevenueDiscounts
+      description: The total value of local discounts applied to subscription revenue
+        that is queued for future recognition.
+      data_type: FLOAT
+    - name: localNextBillingDate
+      description: The next scheduled date for a subscription payment, represented
+        in the subscription's local timezone.
+      data_type: DATETIME
+    - name: storefrontUserEmail
+      description: Email address of the storefront user associated with a subscription
+        analytics cohort.
+      data_type: VARCHAR
+    - name: ianaTimeZone
+      description: The IANA time zone identifier specifying the geographical time
+        zone relevant to the analytics subscription or cohort.
+      data_type: VARCHAR
+    - name: localSubscriptionStartedAt
+      description: Timestamp of when a user's subscription to a local service or offering
+        began.
+      data_type: DATETIME
+    - name: hasVolumeDiscount
+      description: Indicates whether the analytics subscription for this cohort has
+        a volume discount applied.
+      data_type: BOOLEAN
+    - name: remainingCyclesUntilRenewal
+      description: The number of billing cycles remaining until the analytics subscription
+        for this specific cohort automatically renews.
+      data_type: INTEGER
+    - name: nextRenewalDate
+      description: The upcoming date when the analytics subscription for the cohort
+        is due for renewal.
+      data_type: TIMESTAMP
+    - name: cohortDate
+      description: The date that defines the specific user cohort, typically representing
+        their initial subscription or signup date.
+      data_type: DATE
+    - name: segmentId
+      description: The unique identifier for a customer segment analyzed within the
+        cohort's subscription data.
+      data_type: VARCHAR
+    - name: revenueAllTime
+      description: The total revenue generated from all subscriptions belonging to
+        this cohort since its creation.
+      data_type: FLOAT
+    - name: revenueAllTimeDiscount
+      description: The cumulative monetary value of all discounts applied to subscriptions
+        for this specific cohort since their inception.
+      data_type: FLOAT
+    - name: revenue3Month
+      description: The total revenue generated from subscriptions by a specific user
+        cohort over a three-month period.
+      data_type: FLOAT
+    - name: revenue3MonthDiscount
+      description: Revenue generated over a three-month period, net of any applied
+        discounts.
+      data_type: FLOAT
+    - name: revenue6Month
+      description: The total subscription revenue generated by the cohort within a
+        six-month period.
+      data_type: FLOAT
+    - name: revenue6MonthDiscount
+      description: The total discounted revenue generated over a six-month period.
+      data_type: FLOAT
+    - name: revenue12Month
+      description: The total revenue generated by a specific cohort of Analytics subscribers
+        over a 12-month period.
+      data_type: FLOAT
+    - name: revenue12MonthDiscount
+      description: Total revenue generated from subscriptions within a cohort over
+        a 12-month period, net of any applied discounts.
+      data_type: FLOAT
+    - name: orderCountAllTime
+      description: The sum of all orders placed by subscribers within a specific cohort
+        since its inception.
+      data_type: INTEGER
+    - name: daysActive
+      description: The total number of days a subscriber cohort has been active.
+      data_type: INTEGER
+    - name: quantityTotal
+      description: The total quantity of subscribed items or services for the analytics
+        cohort.
+      data_type: INTEGER
+    - name: lineCountTotal
+      description: The total number of lines of data, code, or content recorded for
+        the specific cohort's analytics subscription.
+      data_type: INTEGER
+    - name: isCancelledOnSameDay
+      description: Indicates whether the analytics subscription was cancelled on the
+        same day it was initiated.
+      data_type: BOOLEAN
+    - name: isCancelledBeforeSecondOrder
+      description: Boolean flag indicating whether a subscription was cancelled after
+        its first order but before a second order occurred.
+      data_type: BOOLEAN
+    - name: firstCancellationDate
+      description: This column records the date when a subscription belonging to this
+        cohort was first cancelled.
+      data_type: DATE
+    - name: lastCancellationDate
+      description: The date of the most recent subscription cancellation across all
+        subscriptions within the cohort.
+      data_type: DATE
+    - name: secondOrderLocalCreatedAtDate
+      description: The local date a subsequent record or event related to the analytics
+        subscription for the cohort was created.
+      data_type: DATE
+    - name: secondOrderLocalCreatedAt
+      description: The local time a user in the cohort created their second or subsequent
+        subscription.
+      data_type: DATETIME
+  - name: AuditLog
+    type: table
+    description: Records all user actions and system changes for auditing, compliance,
+      and historical review.
+    columns:
+    - name: id
+      description: A unique identifier for each entry in the audit log. Primary key.
+      data_type: VARCHAR
+      primary_key: true
+    - name: eventType
+      description: Identifies the category or type of action recorded in the audit
+        log.
+      data_type: VARCHAR
+    - name: eventData
+      description: The specific data and details related to the recorded audit event.
+      data_type: VARCHAR
+    - name: subscriptionId
+      description: The unique identifier for the subscription associated with the
+        audit log entry. Joins to Subscription.id.
+      data_type: VARCHAR
+      foreign_key: Subscription.id
+    - name: createdAt
+      description: The date and time this audit log entry was created.
+      data_type: VARCHAR
+    - name: updatedAt
+      description: Timestamp of the last modification to this audit log record.
+      data_type: VARCHAR
+    - name: storefrontUserId
+      description: Identifies the user who performed the audited action. Joins to
+        StorefrontUser.id.
+      data_type: VARCHAR
+      foreign_key: StorefrontUser.id
+    - name: domain
+      description: Identifies the logical domain or subsystem affected by the audited
+        event.
+      data_type: VARCHAR
+    - name: eventDataParsed
+      description: The structured, machine-readable data representing the audit event,
+        derived from its original raw form.
+      data_type: 'NULL'
+    - name: siteId
+      description: A unique identifier representing the site where the logged action
+        originated. Joins to Site.id.
+      data_type: VARCHAR
+      foreign_key: Site.id
+    - name: localCreatedAt
+      description: The timestamp indicating when this audit log entry was created
+        on the local system.
+      data_type: DATETIME
+  - name: BillingAttempt
+    type: table
+    description: Stores data for each instance of an attempt to bill a customer or
+      account.
+    columns:
+    - name: id
+      description: A unique identifier for each individual billing attempt. Primary
+        key.
+      data_type: VARCHAR
+      primary_key: true
+    - name: createdAt
+      description: The date and time the billing attempt record was created.
+      data_type: VARCHAR
+    - name: updatedAt
+      description: The date and time this specific billing attempt record was last
+        modified in the system.
+      data_type: VARCHAR
+    - name: platformId
+      description: Unique identifier for the platform associated with the billing
+        attempt (e.g., Shopify billing attempt ID).
+      data_type: VARCHAR
+    - name: orderId
+      description: The unique identifier of the order this billing attempt is associated
+        with. Joins to Order.id.
+      data_type: VARCHAR
+      foreign_key: Order.id
+    - name: subscriptionId
+      description: Uniquely identifies the subscription associated with this billing
+        attempt. Joins to Subscription.id.
+      data_type: VARCHAR
+      foreign_key: Subscription.id
+    - name: errorCode
+      description: The specific code indicating why the billing attempt failed.
+      data_type: VARCHAR
+    - name: errorMessage
+      description: Contains the specific error message generated when a billing attempt
+        fails.
+      data_type: VARCHAR
+    - name: billingAttemptedAt
+      description: The date and time when the system initiated an attempt to bill
+        a customer.
+      data_type: VARCHAR
+    - name: orderPlatformId
+      description: Identifies the platform order ID on which the order prompting this
+        billing attempt was placed.
+      data_type: VARCHAR
+    - name: subscriptionBillingDate
+      description: The scheduled or actual date for processing a subscription's recurring
+        payment.
+      data_type: VARCHAR
+    - name: stateContext
+      description: Provides specific details or contextual information about the current
+        state of the billing attempt.
+      data_type: VARCHAR
+    - name: idempotencyKey
+      description: Uniquely identifies a billing attempt request to ensure it is processed
+        only once, preventing duplicate charges.
+      data_type: VARCHAR
+    - name: source
+      description: Identifies the system or process that initiated this specific billing
+        attempt.
+      data_type: VARCHAR
+    - name: nextActionUrl
+      description: The URL where the user or system should be directed to take the
+        next required action for this billing attempt.
+      data_type: VARCHAR
+  - name: CancelFlowV2Session
+    type: table
+    description: Stores data related to individual sessions within the version 2 cancellation
+      workflow.
+    columns:
+    - name: id
+      description: A unique identifier for each session of the CancelFlowV2 process.
+        Primary key.
+      data_type: VARCHAR
+      primary_key: true
+    - name: created_at
+      description: The date and time this CancelFlowV2Session was initiated.
+      data_type: VARCHAR
+    - name: updated_at
+      description: Records the exact time this cancel flow V2 session was last updated.
+      data_type: VARCHAR
+    - name: cancelFlowId
+      description: A unique identifier for a specific instance of a cancellation process.
+      data_type: VARCHAR
+    - name: subscriptionId
+      description: Identifies the subscription that is the subject of this cancellation
+        flow session. Joins to Subscription.id.
+      data_type: VARCHAR
+      foreign_key: Subscription.id
+    - name: reasonId
+      description: The unique identifier specifying the underlying reason for a cancellation
+        event within the CancelFlowV2Session.
+      data_type: VARCHAR
+    - name: reason
+      description: The specific reason or explanation provided for the cancellation
+        event within the CancelFlowV2Session.
+      data_type: VARCHAR
+    - name: rebuttalId
+      description: The identifier for the specific retention offer or counter-argument
+        presented to the user during a cancellation flow session.
+      data_type: VARCHAR
+    - name: rebuttal
+      description: Stores the response provided to either a customer's stated reason
+        for cancellation or to a retention offer presented during the cancellation
+        session.
+      data_type: VARCHAR
+    - name: shownReasons
+      description: The reasons for cancellation presented to the user during this
+        CancelFlowV2Session.
+      data_type: VARCHAR
+    - name: shownRebuttals
+      description: Records the specific retention offers or persuasive arguments displayed
+        to the user during the cancellation flow session.
+      data_type: VARCHAR
+    - name: action
+      description: Records the specific step or event occurring during the cancellation
+        flow session.
+      data_type: VARCHAR
+    - name: status
+      description: Indicates the current processing state or final outcome of the
+        CancelFlowV2 session.
+      data_type: VARCHAR
+    - name: rebuttalOptions
+      description: The set of counter-offers or alternative actions presented to a
+        user during a cancellation flow to encourage retention.
+      data_type: VARCHAR
+    - name: conditions
+      description: Records the specific criteria, rules, or states encountered or
+        evaluated during the cancellation flow session.
+      data_type: VARCHAR
+    - name: migratedFromSession
+      description: The identifier of the CancelFlowV2Session from which this session
+        was migrated or continued. Self-join to CancelFlowV2Session.id.
+      data_type: VARCHAR
+    - name: migratedFromSite
+      description: The source site from which the user's account or session was migrated.
+        Joins to Site.id.
+      data_type: VARCHAR
+      foreign_key: Site.id
+    - name: isOtherReason
+      description: Indicates whether the user selected 'Other' as the reason for cancellation
+        during the CancelFlowV2Session.
+      data_type: BOOLEAN
+    - name: shownActions
+      description: Lists the specific actions or choices presented to the user during
+        a CancelFlowV2Session.
+      data_type: VARCHAR
+    - name: isMultipleActions
+      description: Indicates if the user performed more than one action within the
+        cancel flow session.
+      data_type: BOOLEAN
+    - name: actions
+      description: Stores the chronological record of user and system activities performed
+        within the CancelFlowV2 session.
+      data_type: VARCHAR
+    - name: siteId
+      description: The unique identifier for the site where the cancellation flow
+        session was initiated. Joins to Site.id.
+      data_type: VARCHAR
+      foreign_key: Site.id
+    - name: isSplashScreen
+      description: Identifies if the initial screen displayed during the CancelFlowV2
+        session was a splash screen.
+      data_type: BOOLEAN
+    - name: conditionsV2
+      description: The set of conditions or criteria associated with the CancelFlowV2Session.
+      data_type: VARCHAR
+    - name: actionsV2
+      description: Records the specific actions performed by users and the system
+        throughout a CancelFlowV2 session.
+      data_type: VARCHAR
+    - name: actionsV2MultiStep
+      description: Represents the multi-step action sequence associated with a V2
+        cancellation flow session.
+      data_type: VARCHAR
+    - name: reasonPath
+      description: The sequence of reasons a user selected during the cancellation
+        flow.
+      data_type: VARCHAR
+    - name: statusContext
+      description: Describes the specific context or reasons associated with the current
+        status of the cancellation flow session.
+      data_type: VARCHAR
+  - name: CancelFlowV3Session
+    type: table
+    description: This table records the status and details for each session processed
+      by the third version of the cancellation workflow.
+    columns:
+    - name: id
+      description: Uniquely identifies each individual session within the CancelFlowV3
+        process.
+      data_type: VARCHAR
+      primary_key: true
+    - name: subscriptionId
+      description: Uniquely identifies the subscription that is the subject of this
+        cancellation flow session.
+      data_type: VARCHAR
+    - name: versionNumber
+      description: Identifies the specific version of the CancelFlowV3 process that
+        handled this session.
+      data_type: INTEGER
+    - name: cancelFlowId
+      description: The identifier for the specific cancellation flow being tracked
+        by this session.
+      data_type: VARCHAR
+    - name: siteId
+      description: The unique identifier for the site where the cancellation flow
+        session originated.
+      data_type: VARCHAR
+    - name: type
+      description: Specifies the category or nature of the cancellation flow session.
+      data_type: VARCHAR
+    - name: pathTaken
+      description: The specific sequence of interactions or pages encountered by a
+        user during a cancellation flow session.
+      data_type: VARCHAR
+    - name: createdAt
+      description: Records the exact timestamp when this cancellation flow session
+        was first initiated.
+      data_type: VARCHAR
+    - name: updatedAt
+      description: The timestamp indicating when the CancelFlowV3Session record was
+        last updated.
+      data_type: VARCHAR
+    - name: status
+      description: Reflects the current state or completion status of the user's cancellation
+        flow session.
+      data_type: VARCHAR
+  - name: DailyAggregateTable
+    type: table
+    description: Stores daily aggregated data for various business metrics.
+    columns:
+    - name: siteId
+      description: Identifies the unique site associated with the daily aggregated
+        metrics.
+      data_type: VARCHAR
+    - name: domain
+      description: The internet domain representing the source or target for the daily
+        aggregated data.
+      data_type: VARCHAR
+    - name: date
+      description: The specific calendar date for which the daily aggregate data is
+        recorded.
+      data_type: DATE
+    - name: nonSubscriptionRevenue
+      description: Total daily revenue not derived from recurring subscriptions.
+      data_type: FLOAT
+    - name: nonSubscriptionRevenueOrderLineDiscounts
+      description: The daily sum of discounts applied to individual line items of
+        non-subscription revenue orders.
+      data_type: FLOAT
+    - name: nonSubscriptionRevenueOrderLineTaxes
+      description: The daily aggregate of taxes applied to individual non-subscription
+        revenue order line items.
+      data_type: FLOAT
+    - name: nonSubscriptionSubscribers
+      description: The daily count of unique users who access the service without
+        a recurring subscription.
+      data_type: INTEGER
+    - name: nonSubscriptionOrders
+      description: Aggregate count or value of orders made as one-time purchases,
+        not through a recurring subscription.
+      data_type: INTEGER
+    - name: allOrders
+      description: The daily aggregate count of all orders.
+      data_type: INTEGER
+    - name: allOrdersSubscribers
+      description: Represents the daily count of unique subscribers who placed orders.
+      data_type: INTEGER
+    - name: firstTimeRevenue
+      description: Daily total revenue attributed to customers completing their initial
+        purchase.
+      data_type: FLOAT
+    - name: firstTimeRevenueOrderLineDiscounts
+      description: The daily aggregate of line-item discounts applied to a customer's
+        first revenue-generating order.
+      data_type: FLOAT
+    - name: firstTimeRevenueOrderLineTaxes
+      description: Daily sum of taxes on individual order lines from orders placed
+        by customers making their first-ever purchase.
+      data_type: FLOAT
+    - name: firstTimeOrders
+      description: The daily count of orders placed by customers making their very
+        first purchase.
+      data_type: INTEGER
+    - name: firstTimeSubscribers
+      description: Represents the number of unique new subscribers acquired for the
+        first time on a specific day.
+      data_type: INTEGER
+    - name: recurringRevenue
+      description: The total daily revenue generated from ongoing subscriptions, contracts,
+        or other predictable recurring sources.
+      data_type: FLOAT
+    - name: recurringRevenueOrderLineDiscounts
+      description: The daily aggregate of discounts applied to order line items that
+        generate recurring revenue.
+      data_type: FLOAT
+    - name: recurringRevenueOrderLineTaxes
+      description: The daily aggregated total of taxes applied to individual recurring
+        revenue order line items.
+      data_type: FLOAT
+    - name: recurringOrders
+      description: The total number of orders placed by existing customers who frequently
+        reorder or are on a subscription plan.
+      data_type: INTEGER
+    - name: recurringSubscribers
+      description: The daily total of active subscribers who have a recurring subscription
+        plan.
+      data_type: INTEGER
+    - name: oneTimeRevenue
+      description: Total daily revenue from non-recurring, one-off sales or transactions.
+      data_type: FLOAT
+    - name: oneTimeRevenueOrderLineDiscounts
+      description: The total amount of discounts applied to individual order lines
+        that contribute to one-time revenue for the given day.
+      data_type: FLOAT
+    - name: oneTimeRevenueOrderLineTaxes
+      description: The total taxes levied on non-recurring revenue items at the individual
+        order line level.
+      data_type: FLOAT
+    - name: oneTimeOrders
+      description: Daily count of customer orders that are individual, non-recurring
+        purchases.
+      data_type: INTEGER
+    - name: oneTimeSubscribers
+      description: The daily count of unique, first-time subscribers.
+      data_type: INTEGER
+    - name: nonSubscriptionRevenueShippingLine
+      description: Aggregated daily revenue from non-subscription shipping line operations.
+      data_type: FLOAT
+    - name: nonSubscriptionRevenueShippingLineDiscounts
+      description: The aggregate value of discounts applied by shipping lines to revenue
+        not derived from subscriptions.
+      data_type: FLOAT
+    - name: nonSubscriptionRevenueShippingLineTaxes
+      description: The daily aggregate amount of taxes collected on non-subscription
+        shipping line revenue.
+      data_type: FLOAT
+    - name: firstTimeRevenueShippingLine
+      description: The revenue generated from the shipping charges on a customer's
+        very first order.
+      data_type: FLOAT
+    - name: firstTimeRevenueShippingLineDiscounts
+      description: The total amount of shipping discounts applied to revenue generated
+        from customers' first purchases.
+      data_type: FLOAT
+    - name: firstTimeRevenueShippingLineTaxes
+      description: This column records the total revenue from a customer's initial
+        purchase, specifically including the shipping line charges and any associated
+        taxes.
+      data_type: FLOAT
+    - name: recurringRevenueShippingLine
+      description: Daily aggregated revenue from ongoing contracts and long-term service
+        agreements with shipping lines.
+      data_type: FLOAT
+    - name: recurringRevenueShippingLineDiscounts
+      description: The recurring revenue component attributed to discounts received
+        from shipping lines.
+      data_type: FLOAT
+    - name: recurringRevenueShippingLineTaxes
+      description: Daily aggregated recurring revenue specifically attributed to tax
+        components collected within shipping line services.
+      data_type: FLOAT
+    - name: activeSubscriptionsCount
+      description: The total count of active subscriptions recorded for a given day.
+      data_type: INTEGER
+    - name: cancelledSubscriptionsCount
+      description: Represents the total number of subscriptions cancelled on a given
+        day.
+      data_type: INTEGER
+    - name: pausedSubscriptionsCount
+      description: The daily count of subscriptions that were in a paused state.
+      data_type: INTEGER
+    - name: failedSubscriptionsCount
+      description: The total number of subscriptions that failed during the day.
+      data_type: INTEGER
+    - name: activeSubscribersCount
+      description: Counts the total number of unique subscribers who were active on
+        the specific day of the aggregate.
+      data_type: INTEGER
+    - name: cancelledSubscribersCount
+      description: The daily count of subscribers whose subscriptions were cancelled.
+      data_type: INTEGER
+    - name: pausedSubscribersCount
+      description: The daily count of subscribers whose subscriptions are currently
+        paused.
+      data_type: INTEGER
+    - name: failedSubscribersCount
+      description: The daily count of unsuccessful subscriber sign-ups.
+      data_type: INTEGER
+    - name: activeSubscriptionLines
+      description: The total number of active subscription lines recorded for a specific
+        day.
+      data_type: INTEGER
+    - name: activeProductQuantity
+      description: The daily count of unique products that were active during the
+        specified period.
+      data_type: INTEGER
+  - name: NotificationLog
+    type: table
+    description: Logs all notifications dispatched by the system, including recipient,
+      content, timestamp, and status, for audit and operational tracking.
+    columns:
+    - name: id
+      description: A unique identifier for each logged notification. Primary key.
+      data_type: VARCHAR
+      primary_key: true
+    - name: createdAt
+      description: Records the date and time the notification log entry was created.
+      data_type: VARCHAR
+    - name: updatedAt
+      description: The timestamp indicating when the notification log entry was last
+        modified.
+      data_type: VARCHAR
+    - name: subscriptionId
+      description: A unique identifier for the subscription associated with this notification
+        log entry. Joins to Subscription.id.
+      data_type: VARCHAR
+      foreign_key: Subscription.id
+    - name: notificationId
+      description: The unique identifier assigned to each logged notification event.
+      data_type: VARCHAR
+    - name: cost
+      description: The monetary cost incurred for sending this notification.
+      data_type: VARCHAR
+    - name: body
+      description: The complete textual content or message body of the notification
+        sent to the recipient.
+      data_type: VARCHAR
+    - name: subject
+      description: The concise title or main topic of the notification recorded in
+        the log.
+      data_type: VARCHAR
+    - name: email
+      description: The email address to which this notification was sent.
+      data_type: VARCHAR
+    - name: phoneNumber
+      description: The contact phone number to which the notification was sent.
+      data_type: VARCHAR
+    - name: units
+      description: The numerical quantity of items, events, or resources associated
+        with the notification log entry.
+      data_type: VARCHAR
+    - name: storefrontUserId
+      description: The unique identifier for the user who received this notification.
+        Joins to StorefrontUser.id.
+      data_type: VARCHAR
+      foreign_key: StorefrontUser.id
+    - name: siteId
+      description: Identifies the site associated with the recorded notification.
+        Joins to Site.id.
+      data_type: VARCHAR
+      foreign_key: Site.id
+  - name: Order
+    type: table
+    description: Records a customer's request to purchase specific products or services.
+    columns:
+    - name: id
+      description: A unique identifier for each order. Primary key.
+      data_type: VARCHAR
+      primary_key: true
+    - name: createdAt
+      description: The date and time when the order was initially placed or recorded
+        in the system.
+      data_type: VARCHAR
+    - name: updatedAt
+      description: Records the exact date and time the order information was last
+        modified or updated.
+      data_type: VARCHAR
+    - name: platformId
+      description: The unique identifier for the order on the e-commerce platform
+        (e.g., Shopify order ID).
+      data_type: VARCHAR
+    - name: deletedAt
+      description: Timestamp of when the order was soft-deleted, marking it as inactive.
+      data_type: VARCHAR
+    - name: cancelledAt
+      description: The date and time the order was cancelled.
+      data_type: VARCHAR
+    - name: platformNumber
+      description: A unique numerical identifier for the order on the platform (e.g.,
+        Shopify order number like
+      data_type: VARCHAR
+    - name: storefrontUserId
+      description: Identifies the user who placed the order. Joins to StorefrontUser.id.
+      data_type: VARCHAR
+      foreign_key: StorefrontUser.id
+    - name: deliveredAt
+      description: The timestamp indicating when the order was successfully delivered
+        to the customer.
+      data_type: VARCHAR
+    - name: fulfillAt
+      description: The date and time an order is scheduled for fulfillment.
+      data_type: VARCHAR
+    - name: prepaidSubscriptionId
+      description: The unique identifier for a prepaid subscription associated with
+        this order. Joins to Subscription.id for prepaid subscriptions.
+      data_type: VARCHAR
+      foreign_key: Subscription.id
+    - name: firstOrderInPrepaidSequence
+      description: Boolean flag indicating if this order is the first order within
+        a sequence of orders covered by a single prepaid payment.
+      data_type: BOOLEAN
+    - name: fulfillmentOrderCredit
+      description: The monetary credit amount applied to an order during its fulfillment
+        process, typically reflecting adjustments, partial refunds, or returns.
+      data_type: FLOAT
+    - name: note
+      description: Contains any additional free-form information or special instructions
+        related to the order.
+      data_type: VARCHAR
+    - name: processedAt
+      description: The timestamp indicating when the order's processing was completed.
+      data_type: VARCHAR
+    - name: clientIp
+      description: The IP address of the client's device used to place the order.
+      data_type: VARCHAR
+    - name: totalPrice
+      description: The total monetary value of the order after all items, taxes, and
+        discounts have been applied.
+      data_type: FLOAT
+    - name: siteId
+      description: Identifies the site where the order was placed. Joins to Site.id.
+      data_type: VARCHAR
+      foreign_key: Site.id
+    - name: appId
+      description: Identifies the application system that initiated this order.
+      data_type: VARCHAR
+    - name: taxesIncluded
+      description: Specifies whether the order's total amount already incorporates
+        applicable taxes.
+      data_type: BOOLEAN
+    - name: taxExempt
+      description: Indicates whether the order is exempt from sales tax.
+      data_type: BOOLEAN
+    - name: hashedBillingAddress
+      description: A secure, irreversible representation of the customer's billing
+        address for the order, primarily used for internal validation and fraud prevention.
+      data_type: VARCHAR
+    - name: hashedShippingAddress
+      description: The one-way hashed version of the customer's shipping address,
+        used for secure identification and privacy within the order record.
+      data_type: VARCHAR
+    - name: unhashedBillingAddress
+      description: The plain-text billing address supplied by the customer for the
+        given order.
+      data_type: VARCHAR
+    - name: unhashedShippingAddress
+      description: The complete, unhashed physical address provided by the customer
+        for the delivery of this order.
+      data_type: VARCHAR
+    - name: currencyCode
+      description: The three-letter ISO 4217 code identifying the currency in which
+        the order's financial amounts are denominated.
+      data_type: VARCHAR
+    - name: subscriptionId
+      description: A unique identifier linking this order to a recurring subscription.
+        Joins to Subscription.id.
+      data_type: VARCHAR
+      foreign_key: Subscription.id
+    - name: shippingAddressId
+      description: The unique ID identifying the shipping address for this order.
+        Joins to Address.id.
+      data_type: VARCHAR
+      foreign_key: Address.id
+    - name: name
+      description: The name of the customer who placed the order.
+      data_type: VARCHAR
+  - name: OrderLineItem
+    type: table
+    description: Records a specific item, its quantity, and price within a customer's
+      order.
+    columns:
+    - name: id
+      description: A unique identifier for each distinct line item in an order. Primary
+        key.
+      data_type: VARCHAR
+      primary_key: true
+    - name: createdAt
+      description: The date and time this order line item was created.
+      data_type: VARCHAR
+    - name: updatedAt
+      description: The date and time this order line item was last updated.
+      data_type: VARCHAR
+    - name: productVariantId
+      description: The unique identifier for the product variant in this line item.
+        Joins to ProductVariant.id.
+      data_type: VARCHAR
+      foreign_key: ProductVariant.id
+    - name: orderId
+      description: The unique identifier for the order this line item belongs to.
+        Joins to Order.id.
+      data_type: VARCHAR
+      foreign_key: Order.id
+    - name: quantity
+      description: The number of units of the product detailed in this order line
+        item.
+      data_type: INTEGER
+    - name: platformId
+      description: Identifies the line item ID on the e-commerce platform (e.g., Shopify
+        line item ID).
+      data_type: VARCHAR
+    - name: priceWithoutDiscount
+      description: The original, undiscounted unit price of the item as listed on
+        this order line.
+      data_type: VARCHAR
+    - name: groupId
+      description: A unique identifier used to group logically related order line
+        items within or across orders.
+      data_type: VARCHAR
+    - name: subscriptionLineId
+      description: The unique identifier for the subscription line item that generated
+        this order entry. Joins to SubscriptionLine.id.
+      data_type: VARCHAR
+      foreign_key: SubscriptionLine.id
+    - name: attributionGroupId
+      description: A unique identifier linking this order line item to a specific
+        attribution group for marketing and sales credit.
+      data_type: VARCHAR
+    - name: customAttributes
+      description: Stores additional, flexible, and non-standardized attributes specific
+        to this order line item.
+      data_type: VARCHAR
+    - name: currencyCode
+      description: Specifies the currency used for the pricing of this individual
+        order line item.
+      data_type: VARCHAR
+    - name: pricePresentmentCurrencyCode
+      description: The ISO 4217 three-letter currency code representing the currency
+        in which the item's price is presented to the customer.
+      data_type: VARCHAR
+    - name: pricePresentmentAmount
+      description: The monetary amount representing the price presented or displayed
+        to the customer for the order line item.
+      data_type: VARCHAR
+    - name: siteId
+      description: Identifies the site linked to this order line item. Joins to Site.id.
+      data_type: VARCHAR
+      foreign_key: Site.id
+  - name: PaymentMethod
+    type: table
+    description: Defines the acceptable methods for financial transactions within
+      the business.
+    columns:
+    - name: id
+      description: A unique system-generated identifier for each distinct payment
+        method record.
+      data_type: VARCHAR
+      primary_key: true
+    - name: createdAt
+      description: Records the date and time the payment method was added to the system.
+      data_type: VARCHAR
+    - name: updatedAt
+      description: The timestamp recording the last time this payment method's information
+        was modified.
+      data_type: VARCHAR
+    - name: billingAddressId
+      description: Identifies the billing address associated with this payment method.
+      data_type: VARCHAR
+    - name: storefrontUserId
+      description: The unique identifier for the user account associated with this
+        payment method on a particular storefront.
+      data_type: VARCHAR
+    - name: platformId
+      description: The unique identifier for the payment platform associated with
+        this payment method.
+      data_type: VARCHAR
+    - name: revokedAt
+      description: The timestamp indicating when the payment method was revoked.
+      data_type: VARCHAR
+    - name: brand
+      description: The specific brand name of the payment method, such as Visa, Mastercard,
+        or PayPal.
+      data_type: VARCHAR
+    - name: lastDigits
+      description: The final digits of the payment method used for identification
+        and masked display.
+      data_type: VARCHAR
+    - name: expiryMonth
+      description: Indicates the month in which the payment method will expire.
+      data_type: VARCHAR
+    - name: expiryYear
+      description: The four-digit year when the payment method is no longer valid.
+      data_type: VARCHAR
+    - name: instrumentType
+      description: Identifies the category of the payment instrument used, such as
+        credit card, debit card, or bank transfer.
+      data_type: VARCHAR
+    - name: paypalAccountEmail
+      description: The email address registered with the PayPal account associated
+        with this payment method.
+      data_type: VARCHAR
+    - name: inactive
+      description: Indicates whether this payment method is currently disabled or
+        unavailable for use.
+      data_type: BOOLEAN
+    - name: skioRevoke
+      description: Indicates if the payment method has been revoked for Skio services.
+      data_type: BOOLEAN
+  - name: Policy
+    type: table
+    description: Stores billing and delivery policies that define subscription intervals
+      and cycle limits.
+    columns:
+    - name: id
+      description: The unique identification number assigned to each policy. Primary
+        key. Referenced by Subscription.billingPolicyId, Subscription.deliveryPolicyId,
+        and Subscription.prepaidDeliveryPolicyId.
+      data_type: VARCHAR
+      primary_key: true
+    - name: createdAt
+      description: The date and time the policy was created.
+      data_type: VARCHAR
+    - name: updatedAt
+      description: The date and time this policy record was last updated.
+      data_type: VARCHAR
+    - name: interval
+      description: The specified time period for recurring policy activities (e.g.,
+        DAY, WEEK, MONTH, YEAR).
+      data_type: VARCHAR
+    - name: intervalCount
+      description: Specifies the number of intervals between billing or delivery cycles
+        (e.g., 2 with WEEK interval means every 2 weeks).
+      data_type: INTEGER
+    - name: maxCycles
+      description: The maximum number of billing/delivery cycles permitted for the
+        policy.
+      data_type: INTEGER
+    - name: minCycles
+      description: The minimum number of cycles required before cancellation is allowed.
+      data_type: INTEGER
+    - name: isMaxCycleV2
+      description: Indicates whether this policy uses V2 max cycle business rules.
+      data_type: BOOLEAN
+  - name: Product
+    type: table
+    description: Stores comprehensive details for every product offered by the business.
+    columns:
+    - name: id
+      description: A unique identifier for each product. Primary key. Referenced by
+        ProductVariant.productId.
+      data_type: VARCHAR
+      primary_key: true
+    - name: createdAt
+      description: The date and time the product record was first created.
+      data_type: VARCHAR
+    - name: updatedAt
+      description: Records the last date and time this product's information was modified.
+      data_type: VARCHAR
+    - name: siteId
+      description: The unique ID for the site where the product is offered. Joins
+        to Site.id.
+      data_type: VARCHAR
+      foreign_key: Site.id
+    - name: platformId
+      description: Identifies the product ID on the e-commerce platform (e.g., Shopify
+        product ID).
+      data_type: VARCHAR
+    - name: slug
+      description: The short, descriptive, and URL-safe text that identifies the product
+        for use in its web address.
+      data_type: VARCHAR
+    - name: imageSrc
+      description: The URL for the product's primary image.
+      data_type: VARCHAR
+    - name: title
+      description: The short, descriptive name used to identify the product.
+      data_type: VARCHAR
+    - name: deletedAt
+      description: Records the timestamp when a product was soft-deleted, indicating
+        it is no longer active but retained for historical purposes or potential restoration.
+      data_type: VARCHAR
+    - name: status
+      description: Indicates the product's current operational state or availability
+        (e.g., ACTIVE, ARCHIVED, DRAFT).
+      data_type: VARCHAR
+    - name: isSwappable
+      description: Indicates whether this product is eligible for exchange or swapping
+        by a customer.
+      data_type: BOOLEAN
+    - name: canUpsell
+      description: Indicates if this product provides an opportunity to upsell customers
+        to a more expensive or feature-rich alternative.
+      data_type: BOOLEAN
+    - name: smsTitle
+      description: The product's short, descriptive title intended for use in SMS
+        messages.
+      data_type: VARCHAR
+    - name: smsOrder
+      description: Indicates whether the product is available for purchase via SMS.
+      data_type: INTEGER
+    - name: swapTitle
+      description: The title of the product when listed for exchange or swap.
+      data_type: VARCHAR
+    - name: isBuildable
+      description: Indicates whether the product can be manufactured or assembled.
+      data_type: BOOLEAN
+    - name: hideOnEditProductsPage
+      description: Controls whether this product is displayed on the product editing
+        page.
+      data_type: BOOLEAN
+    - name: metafields
+      description: Contains custom, structured data fields that provide additional
+        product details beyond standard attributes.
+      data_type: VARCHAR
+    - name: hideOn1TimeUpsells
+      description: Controls if the product is hidden when one-time upsell offers are
+        displayed.
+      data_type: BOOLEAN
+    - name: oneTimeUpsellPercentageOff
+      description: The percentage discount offered for a one-time upsell when a customer
+        purchases this product.
+      data_type: VARCHAR
+    - name: limitOneTimeUpsellQuantity
+      description: Maximum quantity of this product allowed when purchased as a one-time
+        upsell.
+      data_type: BOOLEAN
+    - name: shopifyTags
+      description: Tags assigned to the product for categorization, filtering, and
+        search on Shopify.
+      data_type: VARCHAR
+    - name: description
+      description: Provides a summary of the product's key features, specifications,
+        and benefits.
+      data_type: VARCHAR
+    - name: images
+      description: Holds all images associated with the product.
+      data_type: VARCHAR
+    - name: showProductForCustomerTags
+      description: Determines if the product is shown to customers based on their
+        associated tags.
+      data_type: VARCHAR
+    - name: publicationId
+      description: Identifies the unique publication associated with this product.
+      data_type: VARCHAR
+  - name: ProductVariant
+    type: table
+    description: Represents a distinct and sellable version of a product, detailing
+      its specific differentiating attributes such as size, color, or material.
+    columns:
+    - name: id
+      description: A unique identifier for each distinct product variant. Primary
+        key. Referenced by OrderLineItem.productVariantId and SubscriptionLine.productVariantId.
+      data_type: VARCHAR
+      primary_key: true
+    - name: createdAt
+      description: The exact date and time this product variant was initially created.
+      data_type: VARCHAR
+    - name: updatedAt
+      description: The timestamp of the most recent modification made to this product
+        variant record.
+      data_type: VARCHAR
+    - name: price
+      description: The selling price of this specific product variant.
+      data_type: VARCHAR
+    - name: title
+      description: A descriptive name for the specific product variant (e.g., "Small
+        / Blue").
+      data_type: VARCHAR
+    - name: platformId
+      description: Identifies the variant ID on the e-commerce platform (e.g., Shopify
+        variant ID).
+      data_type: VARCHAR
+    - name: productId
+      description: Identifies the parent product this variant belongs to. Joins to
+        Product.id.
+      data_type: VARCHAR
+      foreign_key: Product.id
+    - name: sku
+      description: A unique Stock Keeping Unit (SKU) assigned to each product variant
+        for inventory management.
+      data_type: VARCHAR
+    - name: deletedAt
+      description: The timestamp indicating when the ProductVariant was soft-deleted.
+      data_type: VARCHAR
+    - name: image
+      description: The visual representation of this specific product variant.
+      data_type: VARCHAR
+    - name: compareAtPrice
+      description: The original or higher price of the product variant, displayed
+        for comparison against the current selling price to show a discount.
+      data_type: VARCHAR
+    - name: outOfStockAt
+      description: Indicates the precise date and time when this product variant was
+        registered as out of stock.
+      data_type: VARCHAR
+    - name: marketPrices
+      description: The prevailing market prices for this specific product variant.
+      data_type: VARCHAR
+    - name: billingPriceOverride
+      description: The custom billing price for this product variant, overriding the
+        system's standard calculated price.
+      data_type: VARCHAR
+    - name: enableOneTimeUpsell
+      description: Indicates whether a one-time upsell offer can be presented to customers
+        purchasing this product variant.
+      data_type: BOOLEAN
+    - name: hideOnEditProduct
+      description: Indicates whether this product variant should be hidden from view
+        when editing its parent product.
+      data_type: BOOLEAN
+    - name: siteId
+      description: The site where this product variant is offered. Joins to Site.id.
+      data_type: VARCHAR
+      foreign_key: Site.id
+  - name: Site
+    type: table
+    description: Stores identifying and descriptive information for each merchant/store
+      using the platform.
+    columns:
+    - name: id
+      description: The unique identifier for a specific site. Primary key. Referenced
+        by most other tables via siteId.
+      data_type: VARCHAR
+      primary_key: true
+    - name: createdAt
+      description: The date and time the site record was created in the system.
+      data_type: VARCHAR
+    - name: updatedAt
+      description: The date and time the site's record was last modified.
+      data_type: VARCHAR
+    - name: domain
+      description: Identifies the unique internet domain name for the respective site
+        (e.g., mystore.myshopify.com).
+      data_type: VARCHAR
+    - name: url
+      description: The web address of the site.
+      data_type: VARCHAR
+    - name: currencyCode
+      description: The three-letter ISO 4217 code identifying the site's main operating
+        currency.
+      data_type: VARCHAR
+    - name: email
+      description: The official contact email address for the site.
+      data_type: VARCHAR
+    - name: name
+      description: The primary name used to identify and refer to a specific business
+        site or location.
+      data_type: VARCHAR
+    - name: slug
+      description: The unique, URL-friendly string used in the site's web address
+        for readability and SEO.
+      data_type: VARCHAR
+    - name: hostname
+      description: The unique network identifier for the server hosting the site or
+        application.
+      data_type: VARCHAR
+    - name: syncing
+      description: Describes whether the site is currently undergoing or configured
+        for data synchronization activities.
+      data_type: BOOLEAN
+    - name: snippetsSyncing
+      description: Indicates the synchronization status of site-specific code snippets.
+      data_type: BOOLEAN
+    - name: notificationEmail
+      description: The email address designated to receive notifications for this
+        site.
+      data_type: VARCHAR
+    - name: notificationEmailUnderReview
+      description: Indicates whether the site's primary notification email address
+        is currently undergoing a verification or review process.
+      data_type: BOOLEAN
+    - name: urlShortener
+      description: This column identifies the service or tool used by the site to
+        create short, shareable, and trackable versions of longer web addresses.
+      data_type: VARCHAR
+    - name: freeTrialEndsAt
+      description: The date and time when the free trial period for a site expires.
+      data_type: VARCHAR
+    - name: isPaying
+      description: Indicates whether the site is currently subscribed to a paid service
+        or plan.
+      data_type: BOOLEAN
+    - name: plivoPhoneNumber
+      description: The Plivo phone number associated with the site for all communication.
+      data_type: VARCHAR
+    - name: contactFirstName
+      description: The first name of the primary contact person associated with the
+        site.
+      data_type: VARCHAR
+    - name: contactLastName
+      description: This column stores the last name of the primary contact person
+        associated with a specific site.
+      data_type: VARCHAR
+    - name: klaviyoPublicKey
+      description: The public API key that identifies the Klaviyo account associated
+        with this site for data integration and tracking.
+      data_type: VARCHAR
+    - name: klaviyoPrivateKey
+      description: The confidential API key used by the site for secure authentication
+        and interaction with the Klaviyo platform.
+      data_type: VARCHAR
+    - name: transactionCut
+      description: The percentage of each transaction's value that the site retains
+        as revenue.
+      data_type: VARCHAR
+    - name: groupRevenueCut
+      description: The portion of a site's total revenue that the parent group retains.
+      data_type: VARCHAR
+    - name: hideGroupSubscriptions
+      description: Determines if group subscriptions are hidden from display across
+        the entire site.
+      data_type: BOOLEAN
+    - name: backfilling
+      description: Indicates whether a previously vacant resource or requirement at
+        the site is being filled.
+      data_type: BOOLEAN
+    - name: taxIncluded
+      description: A flag indicating whether displayed prices on this site incorporate
+        applicable taxes.
+      data_type: BOOLEAN
+    - name: roundUpAnchors
+      description: Holds the hyperlinks included in the site's round-up content.
+      data_type: BOOLEAN
+    - name: scriptLoadBehavior
+      description: Defines the intended behavior for how client-side scripts are loaded
+        on the site, influencing its performance and user experience.
+      data_type: VARCHAR
+    - name: transactionFee
+      description: The fee charged by the site for processing a transaction.
+      data_type: VARCHAR
+    - name: stripeSubscriptionItemId
+      description: The unique Stripe identifier for a specific product or service
+        included in this site's subscription.
+      data_type: VARCHAR
+    - name: showSellingPlanId
+      description: The unique identifier for the selling plan that is designated to
+        be displayed or actively associated with the site.
+      data_type: BOOLEAN
+    - name: quarterlyOverride
+      description: A manually entered value that overrides the default or calculated
+        quarterly figure for a specific site.
+      data_type: BOOLEAN
+    - name: betaTesting
+      description: Indicates the current beta testing status of the site.
+      data_type: BOOLEAN
+    - name: transactionFeeAppliesToGroup
+      description: Indicates whether the transaction fee for this site is applied
+        to a group of items or transactions.
+      data_type: BOOLEAN
+    - name: orderPrefix
+      description: The unique alphanumeric code used to differentiate order numbers
+        originating from this specific site.
+      data_type: VARCHAR
+    - name: inventoryPolicy
+      description: Specifies the strategy for managing inventory levels and replenishment
+        at this site.
+      data_type: VARCHAR
+    - name: groupDiscountOffOneTime
+      description: The value of the one-time group discount offered by the site.
+      data_type: BOOLEAN
+    - name: featureSMSRemindersWithActions
+      description: Determines if the site sends SMS reminders that include calls to
+        action.
+      data_type: BOOLEAN
+    - name: updateShippingOnSubscriptionChanges
+      description: Indicates whether to automatically update customer shipping information
+        when their subscription changes on this site.
+      data_type: BOOLEAN
+    - name: vCardUrl
+      description: URL of the vCard file containing contact information for the site.
+      data_type: VARCHAR
+    - name: gorgiasAccountName
+      description: Identifies the Gorgias helpdesk account name associated with the
+        site.
+      data_type: VARCHAR
+    - name: gorgiasRefreshToken
+      description: The refresh token used to obtain new access tokens for the site's
+        integration with Gorgias.
+      data_type: VARCHAR
+    - name: pushWeekendOrders
+      description: Indicates if the site automatically pushes orders placed over the
+        weekend for processing.
+      data_type: BOOLEAN
+    - name: billMigratedSubs
+      description: The count of subscribers on this site whose billing has been migrated.
+      data_type: BOOLEAN
+    - name: billingWindow
+      description: The defined time interval for the site's billing cycle.
+      data_type: VARCHAR
+    - name: useRechargeTags
+      description: Specifies if the site utilizes tags from the Recharge Payments
+        platform.
+      data_type: BOOLEAN
+    - name: inviteLinkOverride
+      description: The URL to use as a custom invite link for this site, if different
+        from the system-generated default.
+      data_type: VARCHAR
+    - name: hideChooseSubscription
+      description: Controls whether the site hides the option for users to select
+        a subscription plan.
+      data_type: BOOLEAN
+    - name: storefrontAccessToken
+      description: A security token enabling programmatic access to a site's public
+        storefront data and functionality.
+      data_type: VARCHAR
+    - name: sitewidePortalPercentageOff
+      description: The sitewide percentage discount applicable when accessing the
+        site via a specific portal.
+      data_type: VARCHAR
+    - name: hideOrderStatusWidget
+      description: Indicates whether the order status widget is suppressed from display
+        on the site.
+      data_type: BOOLEAN
+    - name: giftOnSkip
+      description: Configures whether the site provides a gift to users who choose
+        to skip an offering or interaction.
+      data_type: BOOLEAN
+    - name: multipassSecret
+      description: The confidential key enabling the site's multipass authentication
+        functionality.
+      data_type: VARCHAR
+    - name: lastRecurringBillingLock
+      description: Records the timestamp of the last time the site's recurring billing
+        process was locked, marking its completion and preventing reprocessing.
+      data_type: VARCHAR
+    - name: cancelSubscriptionAfterAttempts
+      description: The number of failed payment attempts after which a subscription
+        is automatically cancelled.
+      data_type: INTEGER
+    - name: subscriptionBillingRetryInterval
+      description: Defines the time period the system waits before retrying a failed
+        subscription billing charge.
+      data_type: INTEGER
+    - name: contactEmail
+      description: The primary email address for general contact and inquiries related
+        to the site.
+      data_type: VARCHAR
+    - name: ianaTimezone
+      description: Provides the IANA timezone identifier for the site, ensuring accurate
+        local time and date calculations.
+      data_type: VARCHAR
+    - name: showShippingCalculationButton
+      description: Controls the visibility of the shipping calculation button on the
+        site.
+      data_type: BOOLEAN
+    - name: mergeSubscriptions
+      description: Determines whether the site automatically merges separate user
+        subscriptions into a single, unified subscription.
+      data_type: BOOLEAN
+    - name: skioSmsModifyOptionsMapping
+      description: Defines the site-specific configuration for mapping options used
+        to modify SMS messages within the Skio platform.
+      data_type: VARCHAR
+    - name: twilioMessagingServiceSid
+      description: Identifies the unique Twilio Messaging Service used by this site
+        to handle its SMS and MMS communications.
+      data_type: VARCHAR
+    - name: lastRecurringBillingNotificationLock
+      description: Timestamp indicating when the site last applied a temporary restriction
+        on sending recurring billing notifications.
+      data_type: VARCHAR
+    - name: migrationId
+      description: The unique identifier for the data migration event associated with
+        this site.
+      data_type: VARCHAR
+    - name: impactKey
+      description: Identifies the primary impact classification or type for the site.
+      data_type: VARCHAR
+    - name: impactSid
+      description: Unique identifier for an impact record associated with the site.
+      data_type: VARCHAR
+    - name: showNewCustomerPortal
+      description: Indicates whether the new customer portal should be displayed for
+        this site.
+      data_type: BOOLEAN
+    - name: zendeskToken
+      description: The authentication token enabling the site to interact with Zendesk
+        services.
+      data_type: VARCHAR
+    - name: syncAddressesToShopify
+      description: Indicates whether addresses associated with this site are synchronized
+        to Shopify.
+      data_type: BOOLEAN
+    - name: allowCustomerDiscountCodeStacking
+      description: Specifies whether customers can apply multiple discount codes to
+        a single order on the site.
+      data_type: BOOLEAN
+    - name: settings
+      description: Specifies the configurable parameters and preferences for the site.
+      data_type: VARCHAR
+    - name: syncingRules
+      description: Specifies the exact parameters and logic for synchronizing data
+        to and from the site.
+      data_type: BOOLEAN
+    - name: showPauseInDashboard
+      description: Controls the display of the "pause site" feature within the site's
+        dashboard.
+      data_type: BOOLEAN
+    - name: showPauseInCustomerPortal
+      description: Specifies whether the option to pause services or subscriptions
+        is made visible to customers within their self-service portal.
+      data_type: BOOLEAN
+    - name: termsOfService
+      description: Details the official legal agreement outlining user responsibilities
+        and site policies.
+      data_type: VARCHAR
+    - name: autoMergeBilling
+      description: Determines whether the billing for this site is automatically merged
+        with other associated billing records.
+      data_type: BOOLEAN
+    - name: productDiscountFunctionId
+      description: The unique identifier for the product discount calculation logic
+        applied to products on this site.
+      data_type: VARCHAR
+    - name: gorgiasDashboardActionToken
+      description: Token used by the site to securely authenticate and execute actions
+        within the Gorgias customer service dashboard.
+      data_type: VARCHAR
+    - name: installedApps
+      description: Lists the software applications currently installed and active
+        on the site, essential for understanding site capabilities and dependencies.
+      data_type: VARCHAR
+    - name: smartCarouselSettings
+      description: This column stores the advanced configuration parameters that control
+        the behavior and features of the site's smart carousel.
+      data_type: VARCHAR
+    - name: dunningSettings
+      description: Configures the site's process for handling and pursuing overdue
+        payments.
+      data_type: VARCHAR
+    - name: useFlycodeDunning
+      description: Indicates whether the site uses the Flycode system for managing
+        overdue payments.
+      data_type: BOOLEAN
+    - name: lastMigrationTime
+      description: The date and time this site was last migrated to a new platform
+        or environment.
+      data_type: VARCHAR
+    - name: skioUninstalled
+      description: Documents the uninstallation of the Skio application or service
+        from the site.
+      data_type: BOOLEAN
+    - name: defaultCopyTranslationId
+      description: Identifies the default translation to be used for all copy content
+        on the site.
+      data_type: VARCHAR
+    - name: stripeSaasFee
+      description: The fee levied by Stripe for processing payments related to the
+        site's Software as a Service platform.
+      data_type: VARCHAR
+    - name: previewSettings
+      description: Stores the configuration settings that define how the site is rendered
+        for preview purposes.
+      data_type: VARCHAR
+    - name: skioSmsSettings
+      description: Specifies the SMS notification and messaging settings for the Skio
+        service on the site.
+      data_type: VARCHAR
+    - name: qaAuthSettings
+      description: Manages the authentication settings for quality assurance (QA)
+        processes on the site.
+      data_type: VARCHAR
+    - name: isMigrating
+      description: A boolean flag indicating if the site's data or services are presently
+        being migrated to a different server or platform.
+      data_type: BOOLEAN
+    - name: volumeDiscountShopifyFunctionSettings
+      description: Stores the configuration settings for the Shopify function that
+        manages and applies volume-based discounts on the site.
+      data_type: VARCHAR
+    - name: globalBanner
+      description: Stores the content for the primary banner displayed consistently
+        across all pages of the website for site-wide announcements or branding.
+      data_type: VARCHAR
+    - name: taxShipping
+      description: Indicates if shipping is taxable for this site.
+      data_type: BOOLEAN
+    - name: defaultPermissionSettings
+      description: Defines the default access rights and security permissions automatically
+        applied to new content or user accounts within the site.
+      data_type: VARCHAR
+    - name: dbabDiscountShopifyFunctionSettings
+      description: Configuration settings for the Shopify discount function implemented
+        on this site.
+      data_type: VARCHAR
+    - name: hasActiveShopifySubscription
+      description: Indicates whether the associated site currently has an active Shopify
+        subscription.
+      data_type: BOOLEAN
+    - name: customerPortalVersion
+      description: Indicates the version of the customer portal implemented on the
+        site.
+      data_type: INTEGER
+    - name: collectionSettings
+      description: Specifies the display and organizational settings for all collections
+        of content or products presented on the site.
+      data_type: VARCHAR
+    - name: isShopifyTokenOk
+      description: Denotes the current validity status of the Shopify API token used
+        by the site for integration.
+      data_type: BOOLEAN
+    - name: cpv3Settings
+      description: Holds the configuration settings for the site's Content Protection
+        Version 3 implementation.
+      data_type: VARCHAR
+    - name: billingTiers
+      description: Defines the available billing plans or subscription tiers for the
+        site.
+      data_type: VARCHAR
+    - name: isPlanPartnerDevelopment
+      description: Flag indicating if the site is part of a strategic plan for partner
+        development initiatives.
+      data_type: BOOLEAN
+    - name: planPublicDisplayName
+      description: The customer-visible name for the plan chosen for the site.
+      data_type: VARCHAR
+    - name: isPlanShopifyPlus
+      description: Indicates if the site is subscribed to the Shopify Plus plan.
+      data_type: BOOLEAN
+    - name: webhookRateLimits
+      description: Defines the constraints on the frequency or volume of webhook notifications
+        allowed for a particular site.
+      data_type: VARCHAR
+    - name: stripeLoyaltySubscriptionItemId
+      description: The Stripe ID for the loyalty subscription item associated with
+        this site.
+      data_type: VARCHAR
+    - name: runningKlaviyoBackfill
+      description: Indicates whether a backfill process is currently active to populate
+        historical data into Klaviyo for the site.
+      data_type: BOOLEAN
+    - name: awsPhoneNumber
+      description: The Amazon Web Services contact phone number for the site.
+      data_type: VARCHAR
+    - name: shopifyFunctionIds
+      description: Unique identifiers for Shopify functions or applications configured
+        for the site.
+      data_type: VARCHAR
+    - name: showPauseInCutomerPortal
+      description: Controls the visibility of the 'pause' feature or status within
+        the customer portal.
+      data_type: BOOLEAN
+  - name: StorefrontUser
+    type: table
+    description: The StorefrontUser table captures details for customers accessing
+      and interacting with the company's online retail storefront.
+    columns:
+    - name: id
+      description: A unique identifier for each user within the storefront system.
+        Primary key. Referenced by Address.storefrontUserId, AuditLog.storefrontUserId,
+        NotificationLog.storefrontUserId, Order.storefrontUserId, Subscription.storefrontUserId,
+        and Subscription.prepaidGiftRecipientId.
+      data_type: VARCHAR
+      primary_key: true
+    - name: createdAt
+      description: The date and time the StorefrontUser account was created.
+      data_type: VARCHAR
+    - name: updatedAt
+      description: Stores the timestamp of the most recent update to the StorefrontUser's
+        profile or associated data.
+      data_type: VARCHAR
+    - name: cognitoUsername
+      description: The unique username assigned to the storefront user in AWS Cognito.
+      data_type: VARCHAR
+    - name: email
+      description: The email address serving as the primary identifier and contact
+        point for the storefront user's account.
+      data_type: VARCHAR
+    - name: phoneNumber
+      description: The primary contact phone number for the StorefrontUser.
+      data_type: VARCHAR
+    - name: siteId
+      description: The unique identifier for the site this user belongs to. Joins
+        to Site.id.
+      data_type: VARCHAR
+      foreign_key: Site.id
+    - name: platformId
+      description: The user's ID on the e-commerce platform (e.g., Shopify customer
+        ID).
+      data_type: VARCHAR
+    - name: firstName
+      description: The given name of the user associated with the StorefrontUser account.
+      data_type: VARCHAR
+    - name: lastName
+      description: The family name of the individual user associated with the storefront.
+      data_type: VARCHAR
+    - name: userId
+      description: A unique identifier for a user within the storefront system.
+      data_type: VARCHAR
+    - name: storefrontUserGroupId
+      description: Identifies the group a storefront user belongs to, enabling tailored
+        experiences, pricing, or access.
+      data_type: VARCHAR
+    - name: cognitoUserId
+      description: AWS Cognito's unique identifier for the storefront user.
+      data_type: VARCHAR
+    - name: storefrontUserGroupStatus
+      description: The current status of a storefront user's group membership.
+      data_type: VARCHAR
+    - name: groupDiscountCode
+      description: The unique code that a StorefrontUser can apply to receive a group-specific
+        discount.
+      data_type: VARCHAR
+    - name: redactedAt
+      description: The timestamp indicating when a StorefrontUser's data was redacted.
+      data_type: VARCHAR
+    - name: shopifyTags
+      description: Shopify-specific tags assigned to the storefront user for categorization
+        and segmentation.
+      data_type: VARCHAR
+    - name: qaToken
+      description: A token used to identify or provide special access for quality
+        assurance and testing purposes to a StorefrontUser account.
+      data_type: VARCHAR
+    - name: qaTokenUpdatedAt
+      description: The timestamp when the storefront user's Quality Assurance (QA)
+        token was last updated.
+      data_type: VARCHAR
+    - name: removedAt
+      description: Stores the date and time a StorefrontUser was removed or deactivated
+        from the system.
+      data_type: VARCHAR
+    - name: backupPaymentMethodId
+      description: The ID of the storefront user's backup payment method.
+      data_type: VARCHAR
+    - name: platformCreatedAt
+      description: The timestamp when the storefront user's account was created on
+        the platform.
+      data_type: VARCHAR
+    - name: amountSpent
+      description: The total amount of money the user has spent across all transactions
+        on the storefront.
+      data_type: VARCHAR
+    - name: numberOfOrders
+      description: The total number of orders placed by the storefront user.
+      data_type: INTEGER
+    - name: amountSpentCurrencyCode
+      description: The ISO 4217 currency code indicating the currency of the amount
+        spent by the storefront user.
+      data_type: VARCHAR
+    - name: creditDiscountCode
+      description: The unique identifier for a credit or discount offer associated
+        with the StorefrontUser's account.
+      data_type: VARCHAR
+    - name: isBlacklisted
+      description: Indicates if the storefront user is blacklisted from accessing
+        specific platform services or features.
+      data_type: BOOLEAN
+    - name: birthday
+      description: Captures the user's birth date to facilitate age verification and
+        enable personalized birthday promotions.
+      data_type: VARCHAR
+    - name: tempSmsTransactionalOptIn
+      description: Indicates a storefront user's temporary consent to receive transactional
+        SMS messages.
+      data_type: BOOLEAN
+    - name: smsTransactionalOptIn
+      description: Indicates whether the storefront user has opted in to receive transactional
+        SMS messages.
+      data_type: BOOLEAN
+    - name: emailLower
+      description: The user's email address, stored in a lowercase format to ensure
+        consistency and facilitate efficient searches.
+      data_type: VARCHAR
+    - name: numberOrOrders
+      description: The total number of orders placed by the storefront user.
+      data_type: INTEGER
+  - name: Subscription
+    type: table
+    description: Captures and tracks the essential data for every customer's ongoing
+      or historical service subscription.
+    columns:
+    - name: id
+      description: A unique identifier for each subscription. Primary key. Referenced
+        by AnalyticsStateChangeTable.subscriptionId, AuditLog.subscriptionId, BillingAttempt.subscriptionId,
+        CancelFlowV2Session.subscriptionId, NotificationLog.subscriptionId, Order.subscriptionId,
+        Order.prepaidSubscriptionId, SubscriptionLine.subscriptionId, and SubscriptionLine.prepaidSubscriptionId.
+      data_type: VARCHAR
+      primary_key: true
+    - name: createdAt
+      description: Timestamp indicating the moment the subscription was first created.
+      data_type: VARCHAR
+    - name: updatedAt
+      description: The most recent date a change was made to this subscription.
+      data_type: VARCHAR
+    - name: billingPolicyId
+      description: The unique identifier for the billing policy that defines the charging
+        and payment terms. Joins to Policy.id.
+      data_type: VARCHAR
+      foreign_key: Policy.id
+    - name: deliveryPolicyId
+      description: Specifies the delivery policy that dictates how and when the subscribed
+        product or service is delivered. Joins to Policy.id.
+      data_type: VARCHAR
+      foreign_key: Policy.id
+    - name: shippingAddressId
+      description: The unique identifier for the shipping address associated with
+        this subscription. Joins to Address.id.
+      data_type: VARCHAR
+      foreign_key: Address.id
+    - name: paymentMethodId
+      description: Identifies the payment method linked to this subscription (e.g.,
+        Shopify payment method ID).
+      data_type: VARCHAR
+    - name: deliveryPrice
+      description: The price charged for delivering the items or services within this
+        subscription.
+      data_type: VARCHAR
+    - name: status
+      description: Indicates the current operational status of the subscription (e.g.,
+        ACTIVE, PAUSED, CANCELLED).
+      data_type: VARCHAR
+    - name: currencyCode
+      description: Indicates the three-letter ISO 4217 code identifying the currency
+        for the subscription's pricing.
+      data_type: VARCHAR
+    - name: nextBillingDate
+      description: The date when the next payment for the subscription is due.
+      data_type: VARCHAR
+    - name: storefrontUserId
+      description: The unique identifier for the user who owns this subscription.
+        Joins to StorefrontUser.id.
+      data_type: VARCHAR
+      foreign_key: StorefrontUser.id
+    - name: idempotencyKey
+      description: A unique token that guarantees a subscription creation or modification
+        request is processed exactly once, safeguarding against redundant operations.
+      data_type: VARCHAR
+    - name: platformId
+      description: Identifies the subscription ID on the e-commerce platform (e.g.,
+        Shopify subscription contract ID).
+      data_type: VARCHAR
+    - name: cancelledAt
+      description: The date and time when the subscription was cancelled.
+      data_type: VARCHAR
+    - name: statusContext
+      description: The supplementary information detailing the current state of the
+        subscription (e.g., cancellation reason).
+      data_type: VARCHAR
+    - name: lastBillingAttemptAt
+      description: Records the timestamp of the last billing attempt for the subscription.
+      data_type: VARCHAR
+    - name: migrationIndex
+      description: Indicates the migration stage or group identifier for the subscription.
+      data_type: INTEGER
+    - name: customAttributes
+      description: Captures flexible, additional information unique to each subscription
+        beyond standard details.
+      data_type: VARCHAR
+    - name: prepaidDeliveryPolicyId
+      description: The unique identifier for the prepaid delivery policy applied to
+        this subscription. Joins to Policy.id.
+      data_type: VARCHAR
+      foreign_key: Policy.id
+    - name: prepaidProductPricesPerDelivery
+      description: The prepaid price for individual products included in each subscription
+        delivery.
+      data_type: VARCHAR
+    - name: cyclesCompleted
+      description: The number of billing cycles that have been successfully completed
+        for this subscription.
+      data_type: INTEGER
+    - name: deliveryPriceOverride
+      description: The manually specified delivery price that overrides the standard
+        or calculated delivery cost for this subscription.
+      data_type: INTEGER
+    - name: creditPerOrder
+      description: The amount of credit provided for each order placed under the subscription.
+      data_type: VARCHAR
+    - name: metadata
+      description: Captures arbitrary, non-standard attributes or custom data associated
+        with the subscription.
+      data_type: VARCHAR
+    - name: pausedAt
+      description: The date and time a subscription was temporarily suspended.
+      data_type: VARCHAR
+    - name: siteId
+      description: The unique identifier for the site this subscription belongs to.
+        Joins to Site.id.
+      data_type: VARCHAR
+      foreign_key: Site.id
+    - name: prepaidGiftRecipientId
+      description: The ID of the user designated as the recipient of a prepaid gift
+        subscription. Joins to StorefrontUser.id.
+      data_type: VARCHAR
+      foreign_key: StorefrontUser.id
+    - name: originOrderId
+      description: The unique identifier of the order that led to the creation of
+        this subscription. Joins to Order.id.
+      data_type: VARCHAR
+      foreign_key: Order.id
+    - name: dunningStoryId
+      description: References the specific dunning story or sequence of overdue payment
+        notifications configured for this subscription.
+      data_type: VARCHAR
+    - name: note
+      description: Records supplementary information, special conditions, or internal
+        comments pertaining to the subscription.
+      data_type: VARCHAR
+    - name: isPickup
+      description: Indicates if the customer will pick up their subscription order.
+      data_type: BOOLEAN
+    - name: isDigital
+      description: Indicates whether the subscription is for a digital product or
+        service.
+      data_type: BOOLEAN
+    - name: streakCount
+      description: The number of consecutive periods the subscription has been active.
+      data_type: INTEGER
+    - name: streakExpiresAt
+      description: The specific date and time when the user's current consecutive
+        activity streak, linked to their subscription, will expire if the necessary
+        condition for its continuation is not met.
+      data_type: VARCHAR
+    - name: churnScore
+      description: A numerical value representing the calculated probability that
+        a subscription will be canceled.
+      data_type: VARCHAR
+    - name: churnPredictedAt
+      description: The date and time at which a customer's subscription was predicted
+        to be at risk of churn.
+      data_type: VARCHAR
+    - name: churnRiskReasons
+      description: The specific reasons or factors identified as contributing to a
+        subscriber's elevated risk of cancelling their subscription.
+      data_type: VARCHAR
+    - name: skipCycleBillingDate
+      description: The specific billing date within a subscription cycle that has
+        been marked to be skipped.
+      data_type: VARCHAR
+    - name: maxStreakCount
+      description: The maximum consecutive period, in days, a subscription was active.
+      data_type: INTEGER
+  - name: SubscriptionLine
+    type: table
+    description: Describes each product or service included in a customer's subscription.
+    columns:
+    - name: id
+      description: The unique identifier for a specific line item within a subscription.
+        Primary key. Referenced by OrderLineItem.subscriptionLineId.
+      data_type: VARCHAR
+      primary_key: true
+    - name: updatedAt
+      description: Records the date and time when any detail of this subscription
+        line was last updated.
+      data_type: VARCHAR
+    - name: createdAt
+      description: The date and time this specific subscription line was created.
+      data_type: VARCHAR
+    - name: subscriptionId
+      description: Identifies the parent subscription this line item belongs to. Joins
+        to Subscription.id.
+      data_type: VARCHAR
+      foreign_key: Subscription.id
+    - name: priceWithoutDiscount
+      description: The price of the subscription line item before any discounts are
+        applied.
+      data_type: VARCHAR
+    - name: quantity
+      description: The number of units or services specified for this subscription
+        line.
+      data_type: INTEGER
+    - name: sellingPlanId
+      description: The unique identifier for the selling plan (e.g., monthly subscription,
+        one-time purchase) applied to this line item.
+      data_type: VARCHAR
+    - name: productVariantId
+      description: The unique identifier for the product variant included in this
+        subscription line. Joins to ProductVariant.id.
+      data_type: VARCHAR
+      foreign_key: ProductVariant.id
+    - name: platformId
+      description: Identifies the line item ID on the e-commerce platform (e.g., Shopify
+        subscription line ID).
+      data_type: VARCHAR
+    - name: taxable
+      description: Indicates whether this subscription line item is subject to sales
+        or other applicable taxes.
+      data_type: BOOLEAN
+    - name: groupId
+      description: Identifies the group to which this subscription line belongs.
+      data_type: VARCHAR
+    - name: reChargeId
+      description: The unique identifier from the ReCharge subscription platform for
+        this line item (used during migrations).
+      data_type: VARCHAR
+    - name: boldId
+      description: The unique identifier from Bold subscriptions for this line item
+        (used during migrations).
+      data_type: VARCHAR
+    - name: removedAt
+      description: The timestamp indicating when the subscription line was logically
+        removed or deactivated from the subscription.
+      data_type: VARCHAR
+    - name: ordersRemaining
+      description: The quantity of items or services remaining to be fulfilled for
+        this subscription line.
+      data_type: INTEGER
+    - name: isPrepaid
+      description: Indicates if the payment for this subscription line was received
+        in advance of the service period.
+      data_type: BOOLEAN
+    - name: prepaidSubscriptionId
+      description: Links this subscription line to its associated prepaid subscription.
+        Joins to Subscription.id.
+      data_type: VARCHAR
+      foreign_key: Subscription.id
+    - name: customAttributes
+      description: A flexible collection of additional key-value attributes providing
+        extended, non-standard information about the subscription line.
+      data_type: VARCHAR
+    - name: titleOverride
+      description: The custom display title for the subscription line item, replacing
+        its default product title.
+      data_type: VARCHAR
+    - name: legacySubscriptionId
+      description: The identifier for the subscription from a prior system to which
+        this subscription line belongs.
+      data_type: VARCHAR
+    - name: siteId
+      description: Identifies the site to which this subscription line applies. Joins
+        to Site.id.
+      data_type: VARCHAR
+      foreign_key: Site.id
