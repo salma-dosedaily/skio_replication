@@ -289,3 +289,12 @@ if __name__ == "__main__":
     print("🚀 Starting Local Execution...")
     msg, code = replicate_skio_data(mock_request)
     print(f"\n🏁 {msg} ({code})")
+
+
+
+    # Access secret payloads (read secret values) for ALL secrets in the project
+# gcloud projects add-iam-policy-binding "dosedaily-raw" \
+#   --member="serviceAccount:dosedaily-raw@appspot.gserviceaccount.com" \
+#   --role="roles/secretmanager.secretAccessor"\
+#   --role="roles/secretmanager.viewer"\
+#   --condition=None
