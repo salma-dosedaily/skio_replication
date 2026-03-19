@@ -129,6 +129,12 @@ def replicate_skio_data(request):
                     b.delete_blobs(blobs)
                 client_source.extract_table(f"{SOURCE_PROJECT}.{SOURCE_DATASET}.{t_name}", gcs_uri, job_config=extract_config).result()
 
+                exported_blobs = list(storage_client.list_blobs(GCS_BUCKET_NAME, prefix=f"skio_export/{t_name}/"))
+                if not exported_blobs:
+                    logger.warning(f"[{t_name}] No Avro files exported — source table may be empty. Skipping.")
+                    sync_results.append({"table": t_name, "status": "SKIPPED", "message": "No exported files"})
+                    continue
+
             # --- LOAD STAGING ---
             staging_id = f"{DEST_PROJECT}.{DEST_DATASET}.{t_name}_staging"
             if not dry_run:
