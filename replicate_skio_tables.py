@@ -233,8 +233,13 @@ def replicate_skio_data(request):
             
             pk_cast_str = safe_cast(pk_col)
 
+            src_pk_col = source_map[pk_col]
             merge_sql = f"""
-                MERGE `{dest_id}` T USING `{staging_id}` S
+                MERGE `{dest_id}` T
+                USING (
+                    SELECT * FROM `{staging_id}`
+                    QUALIFY ROW_NUMBER() OVER (PARTITION BY `{src_pk_col}`) = 1
+                ) S
                 ON T.`{pk_col}` = {pk_cast_str}
                 WHEN MATCHED THEN UPDATE SET {update_sql}
                 WHEN NOT MATCHED THEN INSERT ({insert_cols}) VALUES ({insert_vals})
